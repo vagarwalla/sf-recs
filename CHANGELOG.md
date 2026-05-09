@@ -6,6 +6,19 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Categories: Added, Chan
 
 ---
 
+## [2026-05-09] - Vercel deployment
+
+### Added
+- `vercel.json` with daily cron job for metadata refresh (8am UTC)
+- Vercel project linked and env vars configured (Supabase URL/keys, admin password)
+- Production deploy live at `https://sf-recs.vercel.app`
+- GET handler on `/api/places/refresh` for Vercel cron compatibility
+
+### Changed
+- Cron auth supports both `CRON_SECRET` (Pro plan) and `x-vercel-cron` header (Hobby plan)
+
+---
+
 ## [2026-05-09] - Admin page + API routes
 
 ### Added
