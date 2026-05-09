@@ -3,10 +3,20 @@ import { getSupabaseAdmin } from "@/lib/supabase";
 import { getPlaceDetails } from "@/lib/google-places";
 import { isAuthenticated } from "@/lib/auth";
 
+export async function GET(req: NextRequest) {
+  return handleRefresh(req);
+}
+
 export async function POST(req: NextRequest) {
+  return handleRefresh(req);
+}
+
+async function handleRefresh(req: NextRequest) {
   const cronSecret = req.headers.get("authorization")?.replace("Bearer ", "");
   const isAdmin = await isAuthenticated();
-  const isCron = cronSecret === process.env.CRON_SECRET;
+  const isCron =
+    (process.env.CRON_SECRET && cronSecret === process.env.CRON_SECRET) ||
+    req.headers.get("x-vercel-cron") === "true";
 
   if (!isAdmin && !isCron) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
