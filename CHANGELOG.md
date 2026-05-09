@@ -6,6 +6,19 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Categories: Added, Chan
 
 ---
 
+## [2026-05-09] - Data layer + Excel import
+
+### Added
+- Supabase schema: `places` table (with cuisine, neighborhood, dietary_options, lat/lng, price_level) + `cached_metadata` table + RLS policies + indexes
+- `src/lib/types.ts` — TypeScript types for Place, CachedMetadata, GooglePlaceDetails
+- `src/lib/supabase.ts` — Supabase client singleton (public + admin)
+- `src/lib/google-places.ts` — Google Places API wrapper (search, details, photo URL)
+- `scripts/import.ts` — one-time Excel-to-Supabase import script
+- Imported 62 restaurants (33 recs, 29 explore) from Excel spreadsheet
+- Stored `supabase-service-role-key` in macOS Keychain
+
+---
+
 ## [2026-05-09] - Initial project scaffold
 
 ### Added

@@ -104,7 +104,7 @@ All secrets stored in macOS Keychain under account `vaidehiagarwalla`.
 |---|---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | `supabase-url` | |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `supabase-anon-key` | Public read access |
-| `SUPABASE_SERVICE_ROLE_KEY` | (TBD) | Admin writes — add to Keychain when available |
+| `SUPABASE_SERVICE_ROLE_KEY` | `supabase-service-role-key` | Admin writes |
 | `NEXT_PUBLIC_MAPBOX_TOKEN` | `mapbox-access-token` | Public — used in client-side map |
 | `GOOGLE_PLACES_API_KEY` | `google-places-api-key` | Server-side only — never expose to client |
 | `ADMIN_PASSWORD` | `recs-admin-password` | Cookie auth for /admin |
@@ -115,22 +115,31 @@ All secrets stored in macOS Keychain under account `vaidehiagarwalla`.
 ```sql
 create table places (
   id uuid primary key default gen_random_uuid(),
-  google_place_id text not null unique,
-  name text not null,
+  google_place_id text unique,
+  name text not null unique,
   category text not null check (category in ('rec', 'explore')),
   place_type text not null default 'restaurant',
+  cuisine text,
+  neighborhood text,
+  dietary_options text,        -- 'Vegan', 'Veg', or 'Both'
   notes text,
-  tags text[],
+  tags text[] default '{}',
+  latitude double precision not null,
+  longitude double precision not null,
+  website text,
+  price_level text,            -- '$', '$$', '$$$', '$$$$'
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
 
 create table cached_metadata (
-  google_place_id text primary key references places(google_place_id) on delete cascade,
+  google_place_id text primary key,
   data jsonb not null,
   fetched_at timestamptz not null default now()
 );
 ```
+
+**Data imported:** 62 restaurants (33 recs, 29 explore) from the Excel spreadsheet on 2026-05-09. The Excel uses "Exploit" for recs — the import script maps this to "rec".
 
 RLS: public SELECT on both tables, service-role-only INSERT/UPDATE/DELETE.
 
