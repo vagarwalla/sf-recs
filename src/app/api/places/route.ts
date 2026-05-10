@@ -4,23 +4,25 @@ import { isAuthenticated } from "@/lib/auth";
 
 export async function GET() {
   const supabase = getSupabase();
-  const { data, error } = await supabase
-    .from("places")
-    .select("*, cached_metadata(data)")
-    .order("name");
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  const [placesResult, metadataResult] = await Promise.all([
+    supabase.from("places").select("*").order("name"),
+    supabase.from("cached_metadata").select("google_place_id, data"),
+  ]);
+
+  if (placesResult.error) {
+    return NextResponse.json({ error: placesResult.error.message }, { status: 500 });
   }
 
-  const enriched = (data ?? []).map((p: Record<string, unknown>) => {
-    const meta = p.cached_metadata as { data: unknown } | null;
-    return {
-      ...p,
-      cached_metadata: undefined,
-      cached_data: meta?.data ?? null,
-    };
-  });
+  const metaMap = new Map<string, unknown>();
+  for (const m of metadataResult.data ?? []) {
+    metaMap.set(m.google_place_id, m.data);
+  }
+
+  const enriched = (placesResult.data ?? []).map((p) => ({
+    ...p,
+    cached_data: p.google_place_id ? (metaMap.get(p.google_place_id) ?? null) : null,
+  }));
 
   return NextResponse.json(enriched);
 }
