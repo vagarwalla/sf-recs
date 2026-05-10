@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
 import type { Place, Category } from "@/lib/types";
-import FilterPills from "./FilterPills";
+import MultiSelectDropdown from "./MultiSelectDropdown";
 import PlaceList from "./PlaceList";
 import BottomSheet from "./BottomSheet";
 import ThemeToggle from "./ThemeToggle";
@@ -12,17 +12,12 @@ import { Lock, LogOut } from "lucide-react";
 
 const MapComponent = dynamic(() => import("./Map"), { ssr: false });
 
-type CategoryFilter = "all" | Category;
-type DietaryFilter = "all" | "Vegan" | "Veg" | "Both";
-
-const CATEGORY_OPTIONS: { value: CategoryFilter; label: string }[] = [
-  { value: "all", label: "All" },
+const CATEGORY_OPTIONS: { value: string; label: string }[] = [
   { value: "rec", label: "Recs" },
   { value: "explore", label: "Explore" },
 ];
 
-const DIETARY_OPTIONS: { value: DietaryFilter; label: string }[] = [
-  { value: "all", label: "All" },
+const DIETARY_OPTIONS: { value: string; label: string }[] = [
   { value: "Vegan", label: "Vegan" },
   { value: "Veg", label: "Vegetarian" },
   { value: "Both", label: "Both" },
@@ -34,19 +29,18 @@ interface MapViewProps {
 
 export default function MapView({ places: initialPlaces }: MapViewProps) {
   const [places, setPlaces] = useState(initialPlaces);
-  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("all");
-  const [dietaryFilter, setDietaryFilter] = useState<DietaryFilter>("all");
-  const [cuisineFilter, setCuisineFilter] = useState<string>("all");
+  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
+  const [dietaryFilter, setDietaryFilter] = useState<string[]>([]);
+  const [cuisineFilter, setCuisineFilter] = useState<string[]>([]);
+  const [neighborhoodFilter, setNeighborhoodFilter] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [sheetSnap, setSheetSnap] = useState<"peek" | "half" | "full">("peek");
 
-  // Auth state
   const [isAdmin, setIsAdmin] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
 
-  // Check auth on mount
   useEffect(() => {
     fetch("/api/auth")
       .then((r) => r.json())
@@ -66,21 +60,33 @@ export default function MapView({ places: initialPlaces }: MapViewProps) {
         counts.set(base, (counts.get(base) || 0) + 1);
       }
     });
-    const sorted = Array.from(counts.entries())
+    return Array.from(counts.entries())
       .filter(([, count]) => count >= 2)
       .sort((a, b) => b[1] - a[1])
-      .map(([cuisine]) => cuisine);
-    return [
-      { value: "all", label: "All" },
-      ...sorted.map((c) => ({ value: c, label: c })),
-    ];
+      .map(([cuisine]) => ({ value: cuisine, label: cuisine }));
+  }, [places]);
+
+  const neighborhoodOptions = useMemo(() => {
+    const counts = new Map<string, number>();
+    places.forEach((p) => {
+      if (p.neighborhood) {
+        counts.set(p.neighborhood, (counts.get(p.neighborhood) || 0) + 1);
+      }
+    });
+    return Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([n]) => ({ value: n, label: n }));
   }, [places]);
 
   const filtered = useMemo(() => {
     return places.filter((p) => {
-      if (categoryFilter !== "all" && p.category !== categoryFilter) return false;
-      if (dietaryFilter !== "all" && p.dietary_options !== dietaryFilter) return false;
-      if (cuisineFilter !== "all" && !p.cuisine?.toLowerCase().includes(cuisineFilter.toLowerCase())) return false;
+      if (categoryFilter.length > 0 && !categoryFilter.includes(p.category)) return false;
+      if (dietaryFilter.length > 0 && p.dietary_options && !dietaryFilter.includes(p.dietary_options)) return false;
+      if (cuisineFilter.length > 0) {
+        const base = p.cuisine?.split("/")[0].split("(")[0].trim().toLowerCase() ?? "";
+        if (!cuisineFilter.some((c) => base.includes(c.toLowerCase()))) return false;
+      }
+      if (neighborhoodFilter.length > 0 && (!p.neighborhood || !neighborhoodFilter.includes(p.neighborhood))) return false;
       if (searchQuery) {
         const q = searchQuery.toLowerCase();
         const match =
@@ -92,7 +98,7 @@ export default function MapView({ places: initialPlaces }: MapViewProps) {
       }
       return true;
     });
-  }, [places, categoryFilter, dietaryFilter, cuisineFilter, searchQuery]);
+  }, [places, categoryFilter, dietaryFilter, cuisineFilter, neighborhoodFilter, searchQuery]);
 
   const handleSelectPlace = (id: string | null) => {
     setSelectedId(id);
@@ -105,8 +111,13 @@ export default function MapView({ places: initialPlaces }: MapViewProps) {
     <div className="h-screen w-screen overflow-hidden relative">
       {/* Filters — floating on mobile */}
       <div className="absolute top-3 left-3 right-14 z-30 flex flex-col gap-1.5 md:hidden">
-        <FilterPills options={CATEGORY_OPTIONS} selected={categoryFilter} onChange={setCategoryFilter} />
-        <FilterPills options={DIETARY_OPTIONS} selected={dietaryFilter} onChange={setDietaryFilter} />
+        <div className="flex gap-1.5">
+          <div className="flex-1"><MultiSelectDropdown label="Show" options={CATEGORY_OPTIONS} selected={categoryFilter} onChange={setCategoryFilter} /></div>
+          <div className="flex-1"><MultiSelectDropdown label="Diet" options={DIETARY_OPTIONS} selected={dietaryFilter} onChange={setDietaryFilter} /></div>
+        </div>
+        <div className="flex gap-1.5">
+          <div className="flex-1"><MultiSelectDropdown label="Area" options={neighborhoodOptions} selected={neighborhoodFilter} onChange={setNeighborhoodFilter} /></div>
+        </div>
       </div>
 
       <div className="absolute top-3 right-3 z-30 flex items-center gap-2">
@@ -132,14 +143,20 @@ export default function MapView({ places: initialPlaces }: MapViewProps) {
 
       {/* Desktop layout */}
       <div className="hidden md:flex h-full">
-        {/* Sidebar */}
         <div className="w-[380px] shrink-0 h-full overflow-y-auto bg-background border-r border-card-border p-4 flex flex-col gap-3">
           <div>
             <h1 className="text-xl font-bold text-foreground">Vaidehi&apos;s SF Recs</h1>
           </div>
-          <FilterPills label="Show" options={CATEGORY_OPTIONS} selected={categoryFilter} onChange={setCategoryFilter} />
-          <FilterPills label="Diet" options={DIETARY_OPTIONS} selected={dietaryFilter} onChange={setDietaryFilter} />
-          <FilterPills label="Cuisine" options={cuisineOptions} selected={cuisineFilter} onChange={setCuisineFilter} scrollable />
+          <div className="flex flex-col gap-2">
+            <div className="flex gap-2">
+              <div className="flex-1"><MultiSelectDropdown label="Show" options={CATEGORY_OPTIONS} selected={categoryFilter} onChange={setCategoryFilter} /></div>
+              <div className="flex-1"><MultiSelectDropdown label="Diet" options={DIETARY_OPTIONS} selected={dietaryFilter} onChange={setDietaryFilter} /></div>
+            </div>
+            <div className="flex gap-2">
+              <div className="flex-1"><MultiSelectDropdown label="Cuisine" options={cuisineOptions} selected={cuisineFilter} onChange={setCuisineFilter} /></div>
+              <div className="flex-1"><MultiSelectDropdown label="Area" options={neighborhoodOptions} selected={neighborhoodFilter} onChange={setNeighborhoodFilter} /></div>
+            </div>
+          </div>
           <PlaceList
             places={filtered}
             searchQuery={searchQuery}
@@ -155,7 +172,6 @@ export default function MapView({ places: initialPlaces }: MapViewProps) {
           </p>
         </div>
 
-        {/* Map */}
         <div className="flex-1 h-full">
           <MapComponent
             places={filtered}
@@ -185,7 +201,7 @@ export default function MapView({ places: initialPlaces }: MapViewProps) {
               <h1 className="text-lg font-bold text-foreground">Vaidehi&apos;s SF Recs</h1>
               <span className="text-xs text-muted">{filtered.length} places</span>
             </div>
-            <FilterPills label="Cuisine" options={cuisineOptions} selected={cuisineFilter} onChange={setCuisineFilter} scrollable />
+            <MultiSelectDropdown label="Cuisine" options={cuisineOptions} selected={cuisineFilter} onChange={setCuisineFilter} />
             <PlaceList
               places={filtered}
               searchQuery={searchQuery}

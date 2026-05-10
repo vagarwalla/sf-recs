@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   title: "Vaidehi's SF Recs",
   description:
     "Curated veg & vegan restaurant recommendations in San Francisco.",
+  icons: {
+    icon: "/icon.svg",
+  },
 };
 
 export default function RootLayout({
@@ -21,13 +24,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${spaceGrotesk.variable} h-full`} suppressHydrationWarning>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('theme')||'dark';document.documentElement.setAttribute('data-theme',t)}catch(e){}})()`,
-          }}
-        />
-      </head>
       <body className="h-full overflow-hidden font-sans">
         <Providers>{children}</Providers>
       </body>
