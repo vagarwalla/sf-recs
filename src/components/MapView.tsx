@@ -8,7 +8,7 @@ import PlaceList from "./PlaceList";
 import BottomSheet from "./BottomSheet";
 import ThemeToggle from "./ThemeToggle";
 
-const Map = dynamic(() => import("./Map"), { ssr: false });
+const MapComponent = dynamic(() => import("./Map"), { ssr: false });
 
 type CategoryFilter = "all" | Category;
 type DietaryFilter = "all" | "Vegan" | "Veg" | "Both";
@@ -40,14 +40,17 @@ export default function MapView({ places }: MapViewProps) {
   const [sheetSnap, setSheetSnap] = useState<"peek" | "half" | "full">("peek");
 
   const cuisineOptions = useMemo(() => {
-    const cuisines = new Set<string>();
+    const counts = new Map<string, number>();
     places.forEach((p) => {
       if (p.cuisine) {
-        const base = p.cuisine.split("/")[0].trim();
-        cuisines.add(base);
+        const base = p.cuisine.split("/")[0].split("(")[0].trim();
+        counts.set(base, (counts.get(base) || 0) + 1);
       }
     });
-    const sorted = Array.from(cuisines).sort();
+    const sorted = Array.from(counts.entries())
+      .filter(([, count]) => count >= 2)
+      .sort((a, b) => b[1] - a[1])
+      .map(([cuisine]) => cuisine);
     return [
       { value: "all", label: "All" },
       ...sorted.map((c) => ({ value: c, label: c })),
@@ -99,7 +102,7 @@ export default function MapView({ places }: MapViewProps) {
           </div>
           <FilterPills label="Show" options={CATEGORY_OPTIONS} selected={categoryFilter} onChange={setCategoryFilter} />
           <FilterPills label="Diet" options={DIETARY_OPTIONS} selected={dietaryFilter} onChange={setDietaryFilter} />
-          <FilterPills label="Cuisine" options={cuisineOptions} selected={cuisineFilter} onChange={setCuisineFilter} />
+          <FilterPills label="Cuisine" options={cuisineOptions} selected={cuisineFilter} onChange={setCuisineFilter} scrollable />
           <PlaceList
             places={filtered}
             searchQuery={searchQuery}
@@ -115,7 +118,7 @@ export default function MapView({ places }: MapViewProps) {
 
         {/* Map */}
         <div className="flex-1 h-full">
-          <Map
+          <MapComponent
             places={filtered}
             selectedId={selectedId}
             onSelectPlace={handleSelectPlace}
@@ -126,7 +129,7 @@ export default function MapView({ places }: MapViewProps) {
 
       {/* Mobile layout */}
       <div className="md:hidden h-full">
-        <Map
+        <MapComponent
           places={filtered}
           selectedId={selectedId}
           onSelectPlace={handleSelectPlace}
@@ -139,7 +142,7 @@ export default function MapView({ places }: MapViewProps) {
               <h1 className="text-lg font-bold text-foreground">SF Recs</h1>
               <span className="text-xs text-muted">{filtered.length} places</span>
             </div>
-            <FilterPills label="Cuisine" options={cuisineOptions} selected={cuisineFilter} onChange={setCuisineFilter} />
+            <FilterPills label="Cuisine" options={cuisineOptions} selected={cuisineFilter} onChange={setCuisineFilter} scrollable />
             <PlaceList
               places={filtered}
               searchQuery={searchQuery}

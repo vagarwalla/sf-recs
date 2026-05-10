@@ -5,6 +5,7 @@ interface FilterPillsProps<T extends string> {
   options: { value: T; label: string }[];
   selected: T;
   onChange: (value: T) => void;
+  scrollable?: boolean;
 }
 
 export default function FilterPills<T extends string>({
@@ -12,9 +13,12 @@ export default function FilterPills<T extends string>({
   options,
   selected,
   onChange,
+  scrollable = false,
 }: FilterPillsProps<T>) {
   return (
-    <div className="flex items-center gap-1.5 flex-wrap">
+    <div className={`flex items-center gap-1.5 ${scrollable ? "overflow-x-auto" : "flex-wrap"}`}
+      style={scrollable ? { scrollbarWidth: "none", WebkitOverflowScrolling: "touch" } as React.CSSProperties : undefined}
+    >
       {label && (
         <span className="text-xs text-muted font-medium shrink-0 mr-1">{label}</span>
       )}
@@ -23,7 +27,7 @@ export default function FilterPills<T extends string>({
           key={opt.value}
           onClick={() => onChange(opt.value)}
           style={{ minHeight: "36px" }}
-          className={`px-4 rounded-full text-sm font-bold whitespace-nowrap transition-colors ${
+          className={`px-4 rounded-full text-sm font-bold whitespace-nowrap transition-colors shrink-0 ${
             selected === opt.value
               ? "bg-pill-active text-pill-active-text"
               : "bg-pill-bg text-pill-text hover:bg-card-border"
