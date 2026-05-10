@@ -6,13 +6,23 @@ export async function GET() {
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from("places")
-    .select("*")
+    .select("*, cached_metadata(data)")
     .order("name");
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-  return NextResponse.json(data);
+
+  const enriched = (data ?? []).map((p: Record<string, unknown>) => {
+    const meta = p.cached_metadata as { data: unknown } | null;
+    return {
+      ...p,
+      cached_metadata: undefined,
+      cached_data: meta?.data ?? null,
+    };
+  });
+
+  return NextResponse.json(enriched);
 }
 
 export async function POST(req: NextRequest) {
@@ -37,6 +47,7 @@ export async function POST(req: NextRequest) {
       latitude: body.latitude,
       longitude: body.longitude,
       website: body.website || null,
+      rating: body.rating || null,
       price_level: body.price_level || null,
       google_place_id: body.google_place_id || null,
     })

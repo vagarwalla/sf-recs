@@ -1,44 +1,48 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-  --card: #1a1a1a;
-  --card-border: #2a2a2a;
-  --muted: #888;
-  --accent: #f97316;
-  --accent-hover: #fb923c;
-  --pill-bg: #222;
-  --pill-active: #f97316;
-  --pill-text: #ccc;
-  --pill-active-text: #fff;
-  --input-bg: #1a1a1a;
-  --input-border: #333;
-  --badge-rec: #22c55e;
-  --badge-explore: #3b82f6;
-  --sheet-bg: #111;
-  --sheet-handle: #444;
+  --background: #0e0d0a;
+  --foreground: #fff4d6;
+  --card: #1c1a14;
+  --card-border: #2a2720;
+  --muted: #c9b894;
+  --accent: #2ee0c0;
+  --accent-hover: #00b894;
+  --accent-orange: #ff8a4a;
+  --accent-violet: #a08aff;
+  --pill-bg: #1c1a14;
+  --pill-active: #2ee0c0;
+  --pill-text: #c9b894;
+  --pill-active-text: #0e0d0a;
+  --input-bg: #1c1a14;
+  --input-border: #2a2720;
+  --badge-rec: #2ee0c0;
+  --badge-explore: #a08aff;
+  --sheet-bg: #0e0d0a;
+  --sheet-handle: #5a4f42;
   --overlay: rgba(0, 0, 0, 0.4);
 }
 
 [data-theme="light"] {
-  --background: #fafafa;
-  --foreground: #171717;
-  --card: #ffffff;
-  --card-border: #e5e5e5;
-  --muted: #666;
-  --accent: #ea580c;
-  --accent-hover: #f97316;
-  --pill-bg: #f0f0f0;
-  --pill-active: #ea580c;
-  --pill-text: #555;
+  --background: #fff4d6;
+  --foreground: #1a1714;
+  --card: #ffe9b8;
+  --card-border: #e6d5a8;
+  --muted: #5a4f42;
+  --accent: #00b894;
+  --accent-hover: #2ee0c0;
+  --accent-orange: #ff5a1f;
+  --accent-violet: #6240ff;
+  --pill-bg: #ffe9b8;
+  --pill-active: #00b894;
+  --pill-text: #5a4f42;
   --pill-active-text: #fff;
-  --input-bg: #fff;
-  --input-border: #ddd;
-  --badge-rec: #16a34a;
-  --badge-explore: #2563eb;
-  --sheet-bg: #fff;
-  --sheet-handle: #ccc;
+  --input-bg: #ffe9b8;
+  --input-border: #e6d5a8;
+  --badge-rec: #00b894;
+  --badge-explore: #6240ff;
+  --sheet-bg: #fff4d6;
+  --sheet-handle: #c9b894;
   --overlay: rgba(0, 0, 0, 0.2);
 }
 
@@ -50,6 +54,8 @@
   --color-muted: var(--muted);
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
+  --color-accent-orange: var(--accent-orange);
+  --color-accent-violet: var(--accent-violet);
   --color-pill-bg: var(--pill-bg);
   --color-pill-active: var(--pill-active);
   --color-pill-text: var(--pill-text);
@@ -60,8 +66,7 @@
   --color-badge-explore: var(--badge-explore);
   --color-sheet-bg: var(--sheet-bg);
   --color-sheet-handle: var(--sheet-handle);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-space-grotesk);
 }
 
 body {

@@ -1,9 +1,33 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { Trash2, Save, LogIn, Plus, RefreshCw, Search } from "lucide-react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { Trash2, Save, LogIn, Plus, RefreshCw, Search, Star } from "lucide-react";
 import type { Place, Category, DietaryOption } from "@/lib/types";
 import ThemeToggle from "@/components/ThemeToggle";
+
+function StarInput({ value, onChange }: { value: number | null; onChange: (v: number | null) => void }) {
+  return (
+    <div className="flex items-center gap-0.5">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <button
+          key={i}
+          type="button"
+          onClick={() => onChange(value === i ? null : i)}
+          className="p-0.5"
+        >
+          <Star
+            size={16}
+            className={`transition-colors ${
+              value && i <= value
+                ? "text-accent-orange fill-accent-orange"
+                : "text-muted/30 hover:text-accent-orange/50"
+            }`}
+          />
+        </button>
+      ))}
+    </div>
+  );
+}
 
 export default function AdminPage() {
   const [authenticated, setAuthenticated] = useState(false);
@@ -21,12 +45,20 @@ export default function AdminPage() {
     neighborhood: "",
     dietary_options: "Both" as DietaryOption,
     notes: "",
+    rating: null as number | null,
     latitude: "",
     longitude: "",
     website: "",
     price_level: "$$",
   });
   const [message, setMessage] = useState("");
+  const messageTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  const showMessage = (msg: string) => {
+    setMessage(msg);
+    if (messageTimeout.current) clearTimeout(messageTimeout.current);
+    messageTimeout.current = setTimeout(() => setMessage(""), 4000);
+  };
 
   const fetchPlaces = useCallback(async () => {
     const res = await fetch("/api/places");
@@ -51,7 +83,7 @@ export default function AdminPage() {
       setAuthenticated(true);
       setMessage("");
     } else {
-      setMessage("Invalid password");
+      showMessage("Invalid password");
     }
   };
 
@@ -60,7 +92,7 @@ export default function AdminPage() {
     const res = await fetch(`/api/places/${id}`, { method: "DELETE" });
     if (res.ok) {
       setPlaces((p) => p.filter((x) => x.id !== id));
-      setMessage(`Deleted "${name}"`);
+      showMessage(`Deleted "${name}"`);
     }
   };
 
@@ -74,7 +106,7 @@ export default function AdminPage() {
       const updated = await res.json();
       setPlaces((p) => p.map((x) => (x.id === id ? updated : x)));
       setEditingId(null);
-      setMessage(`Saved "${updated.name}"`);
+      showMessage(`Saved "${updated.name}"`);
     }
   };
 
@@ -83,7 +115,7 @@ export default function AdminPage() {
     const lat = parseFloat(newPlace.latitude);
     const lng = parseFloat(newPlace.longitude);
     if (isNaN(lat) || isNaN(lng)) {
-      setMessage("Invalid latitude/longitude");
+      showMessage("Invalid latitude/longitude");
       return;
     }
     const res = await fetch("/api/places", {
@@ -106,27 +138,28 @@ export default function AdminPage() {
         neighborhood: "",
         dietary_options: "Both",
         notes: "",
+        rating: null,
         latitude: "",
         longitude: "",
         website: "",
         price_level: "$$",
       });
-      setMessage("Place added");
+      showMessage("Place added");
     } else {
       const err = await res.json();
-      setMessage(`Error: ${err.error}`);
+      showMessage(`Error: ${err.error}`);
     }
   };
 
   const handleRefresh = async () => {
     setLoading(true);
-    setMessage("Refreshing metadata...");
+    showMessage("Refreshing metadata...");
     const res = await fetch("/api/places/refresh", { method: "POST" });
     if (res.ok) {
       const data = await res.json();
-      setMessage(`Refreshed ${data.refreshed}/${data.total} places (${data.failed} failed)`);
+      showMessage(`Refreshed ${data.refreshed}/${data.total} places (${data.failed} failed)`);
     } else {
-      setMessage("Refresh failed");
+      showMessage("Refresh failed");
     }
     setLoading(false);
   };
@@ -140,6 +173,7 @@ export default function AdminPage() {
       neighborhood: place.neighborhood,
       dietary_options: place.dietary_options,
       notes: place.notes,
+      rating: place.rating,
       price_level: place.price_level,
       website: place.website,
     });
@@ -163,17 +197,17 @@ export default function AdminPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
-            className="px-4 py-3 rounded-lg bg-input-bg border border-input-border text-foreground"
+            className="px-4 py-3 rounded-xl bg-input-bg border border-input-border text-foreground"
             autoFocus
           />
           <button
             type="submit"
-            className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-accent text-white font-medium hover:bg-accent-hover"
+            className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-accent text-pill-active-text font-bold hover:bg-accent-hover"
           >
             <LogIn size={16} />
             Sign in
           </button>
-          {message && <p className="text-sm text-red-500 text-center">{message}</p>}
+          {message && <p className="text-sm text-accent-orange text-center">{message}</p>}
         </form>
       </div>
     );
@@ -191,14 +225,14 @@ export default function AdminPage() {
             <button
               onClick={handleRefresh}
               disabled={loading}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-pill-bg text-foreground text-sm hover:bg-card-border disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-pill-bg text-foreground text-sm font-bold hover:bg-card-border disabled:opacity-50"
             >
               <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
-              Refresh Metadata
+              Refresh
             </button>
             <button
               onClick={() => setAddMode(!addMode)}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-accent text-white text-sm hover:bg-accent-hover"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-accent text-pill-active-text text-sm font-bold hover:bg-accent-hover"
             >
               <Plus size={14} />
               Add Place
@@ -208,7 +242,7 @@ export default function AdminPage() {
         </div>
 
         {message && (
-          <div className="mb-4 px-4 py-2 rounded-lg bg-card border border-card-border text-sm text-foreground">
+          <div className="mb-4 px-4 py-2 rounded-xl bg-card border border-card-border text-sm text-foreground">
             {message}
           </div>
         )}
@@ -223,14 +257,14 @@ export default function AdminPage() {
               placeholder="Name *"
               value={newPlace.name}
               onChange={(e) => setNewPlace({ ...newPlace, name: e.target.value })}
-              className="px-3 py-2 rounded-lg bg-input-bg border border-input-border text-foreground text-sm col-span-2 md:col-span-1"
+              className="px-3 py-2 rounded-xl bg-input-bg border border-input-border text-foreground text-sm col-span-2 md:col-span-1"
             />
             <select
               value={newPlace.category}
               onChange={(e) =>
                 setNewPlace({ ...newPlace, category: e.target.value as Category })
               }
-              className="px-3 py-2 rounded-lg bg-input-bg border border-input-border text-foreground text-sm"
+              className="px-3 py-2 rounded-xl bg-input-bg border border-input-border text-foreground text-sm"
             >
               <option value="rec">Rec</option>
               <option value="explore">Explore</option>
@@ -239,20 +273,20 @@ export default function AdminPage() {
               placeholder="Cuisine"
               value={newPlace.cuisine}
               onChange={(e) => setNewPlace({ ...newPlace, cuisine: e.target.value })}
-              className="px-3 py-2 rounded-lg bg-input-bg border border-input-border text-foreground text-sm"
+              className="px-3 py-2 rounded-xl bg-input-bg border border-input-border text-foreground text-sm"
             />
             <input
               placeholder="Neighborhood"
               value={newPlace.neighborhood}
               onChange={(e) => setNewPlace({ ...newPlace, neighborhood: e.target.value })}
-              className="px-3 py-2 rounded-lg bg-input-bg border border-input-border text-foreground text-sm"
+              className="px-3 py-2 rounded-xl bg-input-bg border border-input-border text-foreground text-sm"
             />
             <select
               value={newPlace.dietary_options}
               onChange={(e) =>
                 setNewPlace({ ...newPlace, dietary_options: e.target.value as DietaryOption })
               }
-              className="px-3 py-2 rounded-lg bg-input-bg border border-input-border text-foreground text-sm"
+              className="px-3 py-2 rounded-xl bg-input-bg border border-input-border text-foreground text-sm"
             >
               <option value="Vegan">Vegan</option>
               <option value="Veg">Vegetarian</option>
@@ -261,50 +295,54 @@ export default function AdminPage() {
             <select
               value={newPlace.price_level}
               onChange={(e) => setNewPlace({ ...newPlace, price_level: e.target.value })}
-              className="px-3 py-2 rounded-lg bg-input-bg border border-input-border text-foreground text-sm"
+              className="px-3 py-2 rounded-xl bg-input-bg border border-input-border text-foreground text-sm"
             >
               <option value="$">$</option>
               <option value="$$">$$</option>
               <option value="$$$">$$$</option>
               <option value="$$$$">$$$$</option>
             </select>
+            <div className="flex items-center gap-2 px-3 py-2">
+              <span className="text-sm text-muted">Rating:</span>
+              <StarInput value={newPlace.rating} onChange={(v) => setNewPlace({ ...newPlace, rating: v })} />
+            </div>
             <input
               required
               placeholder="Latitude *"
               value={newPlace.latitude}
               onChange={(e) => setNewPlace({ ...newPlace, latitude: e.target.value })}
-              className="px-3 py-2 rounded-lg bg-input-bg border border-input-border text-foreground text-sm"
+              className="px-3 py-2 rounded-xl bg-input-bg border border-input-border text-foreground text-sm"
             />
             <input
               required
               placeholder="Longitude *"
               value={newPlace.longitude}
               onChange={(e) => setNewPlace({ ...newPlace, longitude: e.target.value })}
-              className="px-3 py-2 rounded-lg bg-input-bg border border-input-border text-foreground text-sm"
+              className="px-3 py-2 rounded-xl bg-input-bg border border-input-border text-foreground text-sm"
             />
             <input
               placeholder="Website URL"
               value={newPlace.website}
               onChange={(e) => setNewPlace({ ...newPlace, website: e.target.value })}
-              className="px-3 py-2 rounded-lg bg-input-bg border border-input-border text-foreground text-sm"
+              className="px-3 py-2 rounded-xl bg-input-bg border border-input-border text-foreground text-sm"
             />
             <input
               placeholder="Notes"
               value={newPlace.notes}
               onChange={(e) => setNewPlace({ ...newPlace, notes: e.target.value })}
-              className="px-3 py-2 rounded-lg bg-input-bg border border-input-border text-foreground text-sm col-span-2"
+              className="px-3 py-2 rounded-xl bg-input-bg border border-input-border text-foreground text-sm col-span-2"
             />
             <div className="flex gap-2 col-span-2 md:col-span-1">
               <button
                 type="submit"
-                className="flex-1 px-3 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover"
+                className="flex-1 px-3 py-2 rounded-full bg-accent text-pill-active-text text-sm font-bold hover:bg-accent-hover"
               >
                 Add
               </button>
               <button
                 type="button"
                 onClick={() => setAddMode(false)}
-                className="px-3 py-2 rounded-lg bg-pill-bg text-foreground text-sm hover:bg-card-border"
+                className="px-3 py-2 rounded-full bg-pill-bg text-foreground text-sm font-bold hover:bg-card-border"
               >
                 Cancel
               </button>
@@ -319,7 +357,7 @@ export default function AdminPage() {
             placeholder="Search places..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 rounded-lg bg-input-bg border border-input-border text-foreground text-sm placeholder:text-muted focus:outline-none focus:border-accent"
+            className="w-full pl-9 pr-3 py-2 rounded-xl bg-input-bg border border-input-border text-foreground text-sm placeholder:text-muted focus:outline-none focus:border-accent"
           />
         </div>
 
@@ -327,11 +365,12 @@ export default function AdminPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-card border-b border-card-border">
-                <th className="text-left px-3 py-2 text-foreground font-medium">Name</th>
-                <th className="text-left px-3 py-2 text-foreground font-medium hidden md:table-cell">Cuisine</th>
-                <th className="text-left px-3 py-2 text-foreground font-medium hidden md:table-cell">Neighborhood</th>
-                <th className="text-left px-3 py-2 text-foreground font-medium">Cat</th>
-                <th className="text-left px-3 py-2 text-foreground font-medium hidden lg:table-cell">Notes</th>
+                <th className="text-left px-3 py-2 text-foreground font-bold">Name</th>
+                <th className="text-left px-3 py-2 text-foreground font-bold hidden md:table-cell">Cuisine</th>
+                <th className="text-left px-3 py-2 text-foreground font-bold hidden md:table-cell">Nbhd</th>
+                <th className="text-left px-3 py-2 text-foreground font-bold">Cat</th>
+                <th className="text-left px-3 py-2 text-foreground font-bold hidden sm:table-cell">Rating</th>
+                <th className="text-left px-3 py-2 text-foreground font-bold hidden lg:table-cell">Notes</th>
                 <th className="px-3 py-2 w-24"></th>
               </tr>
             </thead>
@@ -347,21 +386,21 @@ export default function AdminPage() {
                         <input
                           value={editForm.name || ""}
                           onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                          className="w-full px-2 py-1 rounded bg-input-bg border border-input-border text-foreground text-sm"
+                          className="w-full px-2 py-1 rounded-lg bg-input-bg border border-input-border text-foreground text-sm"
                         />
                       </td>
                       <td className="px-3 py-2 hidden md:table-cell">
                         <input
                           value={editForm.cuisine || ""}
                           onChange={(e) => setEditForm({ ...editForm, cuisine: e.target.value })}
-                          className="w-full px-2 py-1 rounded bg-input-bg border border-input-border text-foreground text-sm"
+                          className="w-full px-2 py-1 rounded-lg bg-input-bg border border-input-border text-foreground text-sm"
                         />
                       </td>
                       <td className="px-3 py-2 hidden md:table-cell">
                         <input
                           value={editForm.neighborhood || ""}
                           onChange={(e) => setEditForm({ ...editForm, neighborhood: e.target.value })}
-                          className="w-full px-2 py-1 rounded bg-input-bg border border-input-border text-foreground text-sm"
+                          className="w-full px-2 py-1 rounded-lg bg-input-bg border border-input-border text-foreground text-sm"
                         />
                       </td>
                       <td className="px-3 py-2">
@@ -370,30 +409,36 @@ export default function AdminPage() {
                           onChange={(e) =>
                             setEditForm({ ...editForm, category: e.target.value as Category })
                           }
-                          className="px-2 py-1 rounded bg-input-bg border border-input-border text-foreground text-sm"
+                          className="px-2 py-1 rounded-lg bg-input-bg border border-input-border text-foreground text-sm"
                         >
                           <option value="rec">Rec</option>
                           <option value="explore">Explore</option>
                         </select>
                       </td>
+                      <td className="px-3 py-2 hidden sm:table-cell">
+                        <StarInput
+                          value={editForm.rating ?? null}
+                          onChange={(v) => setEditForm({ ...editForm, rating: v })}
+                        />
+                      </td>
                       <td className="px-3 py-2 hidden lg:table-cell">
                         <input
                           value={editForm.notes || ""}
                           onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
-                          className="w-full px-2 py-1 rounded bg-input-bg border border-input-border text-foreground text-sm"
+                          className="w-full px-2 py-1 rounded-lg bg-input-bg border border-input-border text-foreground text-sm"
                         />
                       </td>
                       <td className="px-3 py-2">
                         <div className="flex gap-1">
                           <button
                             onClick={() => handleSave(place.id)}
-                            className="p-1.5 rounded bg-badge-rec text-white hover:opacity-80"
+                            className="p-1.5 rounded-lg bg-badge-rec text-pill-active-text hover:opacity-80"
                           >
                             <Save size={14} />
                           </button>
                           <button
                             onClick={() => setEditingId(null)}
-                            className="p-1.5 rounded bg-pill-bg text-foreground hover:bg-card-border"
+                            className="p-1.5 rounded-lg bg-pill-bg text-foreground hover:bg-card-border"
                           >
                             X
                           </button>
@@ -403,7 +448,7 @@ export default function AdminPage() {
                   ) : (
                     <>
                       <td
-                        className="px-3 py-2 text-foreground font-medium cursor-pointer hover:text-accent"
+                        className="px-3 py-2 text-foreground font-bold cursor-pointer hover:text-accent"
                         onClick={() => startEdit(place)}
                       >
                         {place.name}
@@ -425,13 +470,28 @@ export default function AdminPage() {
                           {place.category}
                         </span>
                       </td>
+                      <td className="px-3 py-2 hidden sm:table-cell">
+                        {place.rating ? (
+                          <span className="flex items-center gap-0.5">
+                            {[1, 2, 3, 4, 5].map((i) => (
+                              <Star
+                                key={i}
+                                size={12}
+                                className={i <= place.rating! ? "text-accent-orange fill-accent-orange" : "text-muted/20"}
+                              />
+                            ))}
+                          </span>
+                        ) : (
+                          <span className="text-muted/30">—</span>
+                        )}
+                      </td>
                       <td className="px-3 py-2 text-muted text-xs truncate max-w-[200px] hidden lg:table-cell">
                         {place.notes || "—"}
                       </td>
                       <td className="px-3 py-2">
                         <button
                           onClick={() => handleDelete(place.id, place.name)}
-                          className="p-1.5 rounded text-muted hover:text-red-500 hover:bg-red-500/10"
+                          className="p-1.5 rounded-lg text-muted hover:text-accent-orange hover:bg-accent-orange/10"
                         >
                           <Trash2 size={14} />
                         </button>

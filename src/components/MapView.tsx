@@ -5,7 +5,6 @@ import dynamic from "next/dynamic";
 import type { Place, Category } from "@/lib/types";
 import FilterPills from "./FilterPills";
 import PlaceList from "./PlaceList";
-import PlaceCard from "./PlaceCard";
 import BottomSheet from "./BottomSheet";
 import ThemeToggle from "./ThemeToggle";
 
@@ -34,15 +33,32 @@ interface MapViewProps {
 export default function MapView({ places }: MapViewProps) {
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("all");
   const [dietaryFilter, setDietaryFilter] = useState<DietaryFilter>("all");
+  const [cuisineFilter, setCuisineFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [sheetSnap, setSheetSnap] = useState<"peek" | "half" | "full">("peek");
 
+  const cuisineOptions = useMemo(() => {
+    const cuisines = new Set<string>();
+    places.forEach((p) => {
+      if (p.cuisine) {
+        const base = p.cuisine.split("/")[0].trim();
+        cuisines.add(base);
+      }
+    });
+    const sorted = Array.from(cuisines).sort();
+    return [
+      { value: "all", label: "All" },
+      ...sorted.map((c) => ({ value: c, label: c })),
+    ];
+  }, [places]);
+
   const filtered = useMemo(() => {
     return places.filter((p) => {
       if (categoryFilter !== "all" && p.category !== categoryFilter) return false;
       if (dietaryFilter !== "all" && p.dietary_options !== dietaryFilter) return false;
+      if (cuisineFilter !== "all" && !p.cuisine?.toLowerCase().includes(cuisineFilter.toLowerCase())) return false;
       if (searchQuery) {
         const q = searchQuery.toLowerCase();
         const match =
@@ -54,7 +70,7 @@ export default function MapView({ places }: MapViewProps) {
       }
       return true;
     });
-  }, [places, categoryFilter, dietaryFilter, searchQuery]);
+  }, [places, categoryFilter, dietaryFilter, cuisineFilter, searchQuery]);
 
   const handleSelectPlace = (id: string | null) => {
     setSelectedId(id);
@@ -65,9 +81,10 @@ export default function MapView({ places }: MapViewProps) {
 
   return (
     <div className="h-screen w-screen overflow-hidden relative">
-      {/* Filters — floating on mobile, in sidebar on desktop */}
-      <div className="absolute top-3 left-3 right-14 z-30 flex gap-2 md:hidden">
+      {/* Filters — floating on mobile */}
+      <div className="absolute top-3 left-3 right-14 z-30 flex flex-col gap-1.5 md:hidden">
         <FilterPills options={CATEGORY_OPTIONS} selected={categoryFilter} onChange={setCategoryFilter} />
+        <FilterPills options={DIETARY_OPTIONS} selected={dietaryFilter} onChange={setDietaryFilter} />
       </div>
 
       <ThemeToggle className="absolute top-3 right-3 z-30" />
@@ -75,13 +92,14 @@ export default function MapView({ places }: MapViewProps) {
       {/* Desktop layout */}
       <div className="hidden md:flex h-full">
         {/* Sidebar */}
-        <div className="w-[380px] shrink-0 h-full overflow-y-auto bg-background border-r border-card-border p-4 flex flex-col gap-4">
+        <div className="w-[380px] shrink-0 h-full overflow-y-auto bg-background border-r border-card-border p-4 flex flex-col gap-3">
           <div>
             <h1 className="text-xl font-bold text-foreground">SF Recs</h1>
             <p className="text-xs text-muted mt-0.5">Vaidehi&apos;s restaurant picks</p>
           </div>
           <FilterPills label="Show" options={CATEGORY_OPTIONS} selected={categoryFilter} onChange={setCategoryFilter} />
           <FilterPills label="Diet" options={DIETARY_OPTIONS} selected={dietaryFilter} onChange={setDietaryFilter} />
+          <FilterPills label="Cuisine" options={cuisineOptions} selected={cuisineFilter} onChange={setCuisineFilter} />
           <PlaceList
             places={filtered}
             searchQuery={searchQuery}
@@ -121,7 +139,7 @@ export default function MapView({ places }: MapViewProps) {
               <h1 className="text-lg font-bold text-foreground">SF Recs</h1>
               <span className="text-xs text-muted">{filtered.length} places</span>
             </div>
-            <FilterPills options={DIETARY_OPTIONS} selected={dietaryFilter} onChange={setDietaryFilter} />
+            <FilterPills label="Cuisine" options={cuisineOptions} selected={cuisineFilter} onChange={setCuisineFilter} />
             <PlaceList
               places={filtered}
               searchQuery={searchQuery}

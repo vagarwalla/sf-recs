@@ -22,8 +22,8 @@ export default function FilterPills<T extends string>({
         <button
           key={opt.value}
           onClick={() => onChange(opt.value)}
-          style={{ minHeight: "32px" }}
-          className={`px-3 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+          style={{ minHeight: "36px" }}
+          className={`px-4 rounded-full text-sm font-bold whitespace-nowrap transition-colors ${
             selected === opt.value
               ? "bg-pill-active text-pill-active-text"
               : "bg-pill-bg text-pill-text hover:bg-card-border"

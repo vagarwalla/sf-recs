@@ -21,6 +21,7 @@ interface MapProps {
 export default function Map({ places, selectedId, onSelectPlace, hoveredId }: MapProps) {
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [zoom, setZoom] = useState(12.5);
   const mapRef = useRef<{ getMap: () => mapboxgl.Map } | null>(null);
 
   useEffect(() => setMounted(true), []);
@@ -50,6 +51,8 @@ export default function Map({ places, selectedId, onSelectPlace, hoveredId }: Ma
       ? "mapbox://styles/mapbox/light-v11"
       : "mapbox://styles/mapbox/dark-v11";
 
+  const showLabels = zoom >= 13;
+
   return (
     <MapGL
       ref={mapRef as React.RefObject<React.ComponentRef<typeof MapGL>>}
@@ -58,6 +61,7 @@ export default function Map({ places, selectedId, onSelectPlace, hoveredId }: Ma
       mapboxAccessToken={MAPBOX_TOKEN}
       style={{ width: "100%", height: "100%" }}
       onClick={() => onSelectPlace(null)}
+      onZoom={(e) => setZoom(e.viewState.zoom)}
       reuseMaps
     >
       <NavigationControl position="bottom-right" showCompass={false} />
@@ -79,13 +83,27 @@ export default function Map({ places, selectedId, onSelectPlace, hoveredId }: Ma
               onSelectPlace(place.id);
             }}
           >
-            <div
-              className={`w-3 h-3 rounded-full border-2 transition-all cursor-pointer ${
-                isSelected || isHovered
-                  ? "scale-150 border-white shadow-lg"
-                  : "border-transparent"
-              } ${isRec ? "bg-badge-rec" : "bg-badge-explore"}`}
-            />
+            <div className="flex flex-col items-center cursor-pointer">
+              <div
+                className={`w-3.5 h-3.5 rounded-full border-2 transition-all ${
+                  isSelected || isHovered
+                    ? "scale-150 border-white shadow-lg"
+                    : "border-transparent"
+                } ${isRec ? "bg-badge-rec" : "bg-badge-explore"}`}
+              />
+              {(showLabels || isSelected || isHovered) && (
+                <span
+                  className={`mt-0.5 text-[10px] font-bold leading-tight max-w-[80px] truncate ${
+                    isSelected || isHovered ? "text-foreground" : "text-muted"
+                  }`}
+                  style={{
+                    textShadow: "0 1px 3px rgba(0,0,0,0.8), 0 0px 6px rgba(0,0,0,0.5)",
+                  }}
+                >
+                  {place.name.length > 15 ? place.name.slice(0, 14) + "…" : place.name}
+                </span>
+              )}
+            </div>
           </Marker>
         );
       })}

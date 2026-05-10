@@ -14,6 +14,7 @@ export interface Place {
   neighborhood: string | null;
   dietary_options: DietaryOption | null;
   notes: string | null;
+  rating: number | null;
   tags: string[];
   latitude: number;
   longitude: number;
@@ -21,6 +22,7 @@ export interface Place {
   price_level: string | null;
   created_at: string;
   updated_at: string;
+  cached_data?: GooglePlaceDetails | null;
 }
 
 export interface CachedMetadata {

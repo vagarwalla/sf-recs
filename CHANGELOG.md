@@ -6,6 +6,36 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Categories: Added, Chan
 
 ---
 
+## [2026-05-09] - Visual refresh + new features
+
+### Added
+- Warm earthy color palette matching jars.vaidehiagarwalla.com (dark: #0e0d0a/#fff4d6, light: #fff4d6/#1a1714)
+- Space Grotesk font replacing Geist
+- Cuisine filter (dynamic options extracted from place data)
+- Personal rating system (1-5 stars) — admin can rate places, stars display on public cards
+- Star rating input component in admin add/edit forms
+- Map markers now show restaurant names as labels (visible at zoom > 13)
+- "Open now" / "Closed" badge on place cards (from cached Google metadata)
+- Today's opening hours displayed on place cards
+- Notes displayed in blockquote style with left accent border
+- `cached_metadata` joined in GET `/api/places` for enriched public data
+- `rating` column in `places` table (migration `002_add_rating.sql`)
+- Auto-dismissing status messages in admin (4s timeout)
+
+### Changed
+- Badge colors: rec = green (#2ee0c0), explore = violet (#a08aff)
+- Accent color from orange to green, with orange and violet as secondary accents
+- Pills: rounded-full with bold text, green active state
+- Buttons: rounded-full styling matching jars aesthetic
+- Dietary options icon: Clock replaced with Leaf
+- Mobile floating filters now show both category and dietary pills
+- Cuisine line on cards merged with neighborhood (single row with dots)
+
+### Fixed
+- Dietary options used Clock icon (semantic mismatch) — now uses Leaf
+
+---
+
 ## [2026-05-09] - Vercel deployment
 
 ### Added
