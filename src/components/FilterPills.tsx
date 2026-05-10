@@ -16,7 +16,7 @@ export default function FilterPills<T extends string>({
   scrollable = false,
 }: FilterPillsProps<T>) {
   return (
-    <div className={`flex items-center gap-1.5 ${scrollable ? "overflow-x-auto" : "flex-wrap"}`}
+    <div className={`flex items-center gap-1.5 ${scrollable ? "overflow-x-auto min-h-[36px]" : "flex-wrap"}`}
       style={scrollable ? { scrollbarWidth: "none", WebkitOverflowScrolling: "touch" } as React.CSSProperties : undefined}
     >
       {label && (
