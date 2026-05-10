@@ -148,7 +148,7 @@ export default function Map({ places, selectedId, onSelectPlace, hoveredId, isAd
       <NavigationControl position="bottom-right" showCompass={false} />
       <GeolocateControl position="bottom-right" />
 
-      <div className="absolute top-3 right-3 z-10">
+      <div className="absolute top-3 right-12 z-10">
         <button
           onClick={(e) => { e.stopPropagation(); fitAll(); }}
           title="Fit all places"
