@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Space_Grotesk } from "next/font/google";
+import { Geist } from "next/font/google";
 import Providers from "@/components/Providers";
 import "./globals.css";
 
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
+const geist = Geist({
+  variable: "--font-geist",
   subsets: ["latin"],
 });
 
@@ -23,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} h-full`} suppressHydrationWarning>
+    <html lang="en" className={`${geist.variable} h-full`} suppressHydrationWarning>
       <body className="h-full overflow-hidden font-sans">
         <Providers>{children}</Providers>
       </body>

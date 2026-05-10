@@ -66,7 +66,7 @@
   --color-badge-explore: var(--badge-explore);
   --color-sheet-bg: var(--sheet-bg);
   --color-sheet-handle: var(--sheet-handle);
-  --font-sans: var(--font-space-grotesk);
+  --font-sans: var(--font-geist);
 }
 
 body {
