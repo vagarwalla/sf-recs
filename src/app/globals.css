@@ -1,29 +1,6 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0e0d0a;
-  --foreground: #fff4d6;
-  --card: #1c1a14;
-  --card-border: #2a2720;
-  --muted: #c9b894;
-  --accent: #2ee0c0;
-  --accent-hover: #00b894;
-  --accent-orange: #ff8a4a;
-  --accent-violet: #a08aff;
-  --pill-bg: #1c1a14;
-  --pill-active: #2ee0c0;
-  --pill-text: #c9b894;
-  --pill-active-text: #0e0d0a;
-  --input-bg: #1c1a14;
-  --input-border: #2a2720;
-  --badge-rec: #2ee0c0;
-  --badge-explore: #a08aff;
-  --sheet-bg: #0e0d0a;
-  --sheet-handle: #5a4f42;
-  --overlay: rgba(0, 0, 0, 0.4);
-}
-
-[data-theme="light"] {
   --background: #fff4d6;
   --foreground: #1a1714;
   --card: #ffe9b8;
@@ -44,6 +21,29 @@
   --sheet-bg: #fff4d6;
   --sheet-handle: #c9b894;
   --overlay: rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] {
+  --background: #0e0d0a;
+  --foreground: #fff4d6;
+  --card: #1c1a14;
+  --card-border: #2a2720;
+  --muted: #c9b894;
+  --accent: #2ee0c0;
+  --accent-hover: #00b894;
+  --accent-orange: #ff8a4a;
+  --accent-violet: #a08aff;
+  --pill-bg: #1c1a14;
+  --pill-active: #2ee0c0;
+  --pill-text: #c9b894;
+  --pill-active-text: #0e0d0a;
+  --input-bg: #1c1a14;
+  --input-border: #2a2720;
+  --badge-rec: #2ee0c0;
+  --badge-explore: #a08aff;
+  --sheet-bg: #0e0d0a;
+  --sheet-handle: #5a4f42;
+  --overlay: rgba(0, 0, 0, 0.4);
 }
 
 @theme inline {
