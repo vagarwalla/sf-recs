@@ -167,11 +167,14 @@ export default function Map({ places, selectedId, onSelectPlace, hoveredId }: Ma
               </div>
               {(showLabels || isSelected || isHovered) && (
                 <span
-                  className={`mt-0.5 text-[10px] font-bold leading-tight max-w-[80px] truncate ${
-                    isSelected || isHovered ? "text-foreground" : "text-muted"
+                  className={`mt-1 text-xs font-bold leading-tight max-w-[100px] truncate px-1.5 py-0.5 rounded-md ${
+                    isSelected || isHovered
+                      ? "text-foreground bg-background/80"
+                      : "text-foreground/90 bg-background/60"
                   }`}
                   style={{
-                    textShadow: "0 1px 3px rgba(0,0,0,0.8), 0 0px 6px rgba(0,0,0,0.5)",
+                    backdropFilter: "blur(4px)",
+                    WebkitBackdropFilter: "blur(4px)",
                   }}
                 >
                   {place.name.length > 15 ? place.name.slice(0, 14) + "…" : place.name}
