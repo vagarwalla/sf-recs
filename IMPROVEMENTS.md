@@ -1,16 +1,23 @@
 # Improvements
 
-Ongoing list of improvements for sf-recs. Check off as completed.
+Running list of ideas. **Two ways to add:**
+
+1. **Quick CLI** — `npm run idea "your idea here"` adds to Inbox below
+2. **Manual** — just edit this file and drop a bullet anywhere in Inbox
 
 ---
 
-## Done
+## 📥 Inbox
 
-- [x] **Custom favicon** — noodle bowl emoji SVG on dark circle background
-- [x] **Multiselect dropdown filters** — replaced pill-style filters with dropdown multiselect (category, dietary, cuisine)
-- [x] **Neighborhood filter/selector** — new "Area" dropdown with all neighborhoods, supports multiselect
-- [x] **Fix script tag warning** — removed redundant theme init script (next-themes handles it)
+<!-- New ideas land here. Move to "Up Next" when ready to work on, or just leave them. -->
 
-## Backlog
+## 🔨 Up Next
 
-<!-- Add new ideas here -->
+<!-- Pull from Inbox when ready to tackle next session. -->
+
+## ✅ Done
+
+- [x] Custom favicon (noodle bowl SVG)
+- [x] Multiselect dropdown filters (category, dietary, cuisine)
+- [x] Neighborhood ("Area") filter with multiselect
+- [x] Fix script tag console warning
