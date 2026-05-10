@@ -148,12 +148,12 @@ export default function Map({ places, selectedId, onSelectPlace, hoveredId, isAd
       <NavigationControl position="bottom-right" showCompass={false} />
       <GeolocateControl position="bottom-right" />
 
-      <div className="absolute top-3 right-12 z-10">
+      <div className="absolute bottom-[140px] right-[10px] z-10">
         <button
           onClick={(e) => { e.stopPropagation(); fitAll(); }}
           title="Fit all places"
           className="w-[29px] h-[29px] flex items-center justify-center rounded-md bg-white text-[#333] shadow hover:bg-gray-100 transition-colors"
-          style={{ fontSize: "16px", lineHeight: 1 }}
+          style={{ fontSize: "14px", lineHeight: 1 }}
         >
           ⊞
         </button>
