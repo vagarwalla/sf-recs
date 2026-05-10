@@ -9,7 +9,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "SF Recs — Vaidehi's Restaurant Picks",
+  title: "Vaidehi's SF Recs",
   description:
     "Curated veg & vegan restaurant recommendations in San Francisco.",
 };

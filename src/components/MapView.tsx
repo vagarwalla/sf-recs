@@ -135,8 +135,7 @@ export default function MapView({ places: initialPlaces }: MapViewProps) {
         {/* Sidebar */}
         <div className="w-[380px] shrink-0 h-full overflow-y-auto bg-background border-r border-card-border p-4 flex flex-col gap-3">
           <div>
-            <h1 className="text-xl font-bold text-foreground">SF Recs</h1>
-            <p className="text-xs text-muted mt-0.5">Vaidehi&apos;s restaurant picks</p>
+            <h1 className="text-xl font-bold text-foreground">Vaidehi&apos;s SF Recs</h1>
           </div>
           <FilterPills label="Show" options={CATEGORY_OPTIONS} selected={categoryFilter} onChange={setCategoryFilter} />
           <FilterPills label="Diet" options={DIETARY_OPTIONS} selected={dietaryFilter} onChange={setDietaryFilter} />
@@ -183,7 +182,7 @@ export default function MapView({ places: initialPlaces }: MapViewProps) {
         <BottomSheet snap={sheetSnap} onSnapChange={setSheetSnap}>
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between">
-              <h1 className="text-lg font-bold text-foreground">SF Recs</h1>
+              <h1 className="text-lg font-bold text-foreground">Vaidehi&apos;s SF Recs</h1>
               <span className="text-xs text-muted">{filtered.length} places</span>
             </div>
             <FilterPills label="Cuisine" options={cuisineOptions} selected={cuisineFilter} onChange={setCuisineFilter} scrollable />
