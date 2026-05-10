@@ -11,6 +11,8 @@ interface PlaceListProps {
   selectedId: string | null;
   onSelectPlace: (id: string) => void;
   onHoverPlace: (id: string | null) => void;
+  isAdmin?: boolean;
+  onPlaceUpdated?: (place: Place) => void;
 }
 
 export default function PlaceList({
@@ -20,6 +22,8 @@ export default function PlaceList({
   selectedId,
   onSelectPlace,
   onHoverPlace,
+  isAdmin,
+  onPlaceUpdated,
 }: PlaceListProps) {
   return (
     <div className="flex flex-col gap-3">
@@ -49,6 +53,8 @@ export default function PlaceList({
                 compact={false}
                 isSelected={place.id === selectedId}
                 onSelect={() => onSelectPlace(place.id)}
+                isAdmin={isAdmin}
+                onPlaceUpdated={onPlaceUpdated}
               />
             </div>
           ))}

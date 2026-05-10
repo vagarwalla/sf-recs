@@ -79,9 +79,11 @@ interface MapProps {
   selectedId: string | null;
   onSelectPlace: (id: string | null) => void;
   hoveredId: string | null;
+  isAdmin?: boolean;
+  onPlaceUpdated?: (place: Place) => void;
 }
 
-export default function Map({ places, selectedId, onSelectPlace, hoveredId }: MapProps) {
+export default function Map({ places, selectedId, onSelectPlace, hoveredId, isAdmin, onPlaceUpdated }: MapProps) {
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [zoom, setZoom] = useState(12.5);
@@ -156,16 +158,16 @@ export default function Map({ places, selectedId, onSelectPlace, hoveredId }: Ma
               onMouseLeave={() => setHoveredMarkerId(null)}
             >
               <div
-                className={`flex items-center justify-center rounded-full transition-all ${
+                className={`flex items-center justify-center rounded-full w-7 h-7 transition-shadow ${
                   isSelected || isHovered
-                    ? "w-9 h-9 shadow-lg ring-2 ring-white/80"
-                    : "w-7 h-7"
+                    ? "shadow-lg ring-2 ring-white/80"
+                    : ""
                 } ${isRec ? "bg-badge-rec/90" : "bg-badge-explore/90"}`}
-                style={{ fontSize: isSelected || isHovered ? "16px" : "13px" }}
+                style={{ fontSize: "13px" }}
               >
                 <span className="leading-none" role="img">{icon}</span>
               </div>
-              {(showLabels || isSelected || isHovered) && (
+              {(showLabels || isSelected || (hoveredId === place.id)) && hoveredMarkerId !== place.id && (
                 <span
                   className={`mt-1 text-xs font-bold leading-tight max-w-[100px] truncate px-1.5 py-0.5 rounded-md ${
                     isSelected || isHovered
@@ -238,7 +240,7 @@ export default function Map({ places, selectedId, onSelectPlace, hoveredId }: Ma
           className="place-popup"
         >
           <div className="p-1">
-            <PlaceCard place={selectedPlace} />
+            <PlaceCard place={selectedPlace} isAdmin={isAdmin} onPlaceUpdated={onPlaceUpdated} />
           </div>
         </Popup>
       )}

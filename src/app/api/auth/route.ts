@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthCookieName } from "@/lib/auth";
+import { isAuthenticated } from "@/lib/auth";
+
+export async function GET() {
+  const authed = await isAuthenticated();
+  return NextResponse.json({ authenticated: authed });
+}
 
 export async function POST(req: NextRequest) {
   const { password } = await req.json();

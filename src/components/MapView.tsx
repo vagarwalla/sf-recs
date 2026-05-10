@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
 import type { Place, Category } from "@/lib/types";
 import FilterPills from "./FilterPills";
 import PlaceList from "./PlaceList";
 import BottomSheet from "./BottomSheet";
 import ThemeToggle from "./ThemeToggle";
+import LoginModal from "./LoginModal";
+import { Lock, LogOut } from "lucide-react";
 
 const MapComponent = dynamic(() => import("./Map"), { ssr: false });
 
@@ -30,7 +32,8 @@ interface MapViewProps {
   places: Place[];
 }
 
-export default function MapView({ places }: MapViewProps) {
+export default function MapView({ places: initialPlaces }: MapViewProps) {
+  const [places, setPlaces] = useState(initialPlaces);
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("all");
   const [dietaryFilter, setDietaryFilter] = useState<DietaryFilter>("all");
   const [cuisineFilter, setCuisineFilter] = useState<string>("all");
@@ -38,6 +41,22 @@ export default function MapView({ places }: MapViewProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [sheetSnap, setSheetSnap] = useState<"peek" | "half" | "full">("peek");
+
+  // Auth state
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
+
+  // Check auth on mount
+  useEffect(() => {
+    fetch("/api/auth")
+      .then((r) => r.json())
+      .then((d) => setIsAdmin(d.authenticated))
+      .catch(() => {});
+  }, []);
+
+  const handlePlaceUpdated = useCallback((updated: Place) => {
+    setPlaces((prev) => prev.map((p) => (p.id === updated.id ? { ...p, ...updated } : p)));
+  }, []);
 
   const cuisineOptions = useMemo(() => {
     const counts = new Map<string, number>();
@@ -90,7 +109,26 @@ export default function MapView({ places }: MapViewProps) {
         <FilterPills options={DIETARY_OPTIONS} selected={dietaryFilter} onChange={setDietaryFilter} />
       </div>
 
-      <ThemeToggle className="absolute top-3 right-3 z-30" />
+      <div className="absolute top-3 right-3 z-30 flex items-center gap-2">
+        {isAdmin ? (
+          <button
+            onClick={() => setIsAdmin(false)}
+            className="p-2 rounded-full bg-accent/20 text-accent hover:bg-accent/30 transition-colors"
+            title="Editing enabled — click to lock"
+          >
+            <LogOut size={16} />
+          </button>
+        ) : (
+          <button
+            onClick={() => setShowLogin(true)}
+            className="p-2 rounded-full bg-card/80 text-muted hover:text-foreground hover:bg-card transition-colors backdrop-blur"
+            title="Admin login"
+          >
+            <Lock size={16} />
+          </button>
+        )}
+        <ThemeToggle />
+      </div>
 
       {/* Desktop layout */}
       <div className="hidden md:flex h-full">
@@ -110,6 +148,8 @@ export default function MapView({ places }: MapViewProps) {
             selectedId={selectedId}
             onSelectPlace={(id) => handleSelectPlace(id)}
             onHoverPlace={setHoveredId}
+            isAdmin={isAdmin}
+            onPlaceUpdated={handlePlaceUpdated}
           />
           <p className="text-xs text-muted text-center pb-2">
             {filtered.length} place{filtered.length !== 1 ? "s" : ""}
@@ -123,6 +163,8 @@ export default function MapView({ places }: MapViewProps) {
             selectedId={selectedId}
             onSelectPlace={handleSelectPlace}
             hoveredId={hoveredId}
+            isAdmin={isAdmin}
+            onPlaceUpdated={handlePlaceUpdated}
           />
         </div>
       </div>
@@ -134,6 +176,8 @@ export default function MapView({ places }: MapViewProps) {
           selectedId={selectedId}
           onSelectPlace={handleSelectPlace}
           hoveredId={null}
+          isAdmin={isAdmin}
+          onPlaceUpdated={handlePlaceUpdated}
         />
 
         <BottomSheet snap={sheetSnap} onSnapChange={setSheetSnap}>
@@ -153,10 +197,21 @@ export default function MapView({ places }: MapViewProps) {
                 setSheetSnap("peek");
               }}
               onHoverPlace={() => {}}
+              isAdmin={isAdmin}
+              onPlaceUpdated={handlePlaceUpdated}
             />
           </div>
         </BottomSheet>
       </div>
+
+      <LoginModal
+        open={showLogin}
+        onClose={() => setShowLogin(false)}
+        onSuccess={() => {
+          setIsAdmin(true);
+          setShowLogin(false);
+        }}
+      />
     </div>
   );
 }

@@ -97,6 +97,7 @@ body {
   padding: 0 !important;
   border-radius: 10px !important;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4) !important;
+  pointer-events: none;
 }
 
 .hover-popup .mapboxgl-popup-close-button {
