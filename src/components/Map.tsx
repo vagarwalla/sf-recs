@@ -100,11 +100,24 @@ export default function Map({ places, selectedId, onSelectPlace, hoveredId, isAd
     (place: Place) => {
       const map = mapRef.current?.getMap();
       if (map) {
-        map.flyTo({ center: [place.longitude, place.latitude], zoom: 15, duration: 800 });
+        map.flyTo({ center: [place.longitude, place.latitude], zoom: 14, duration: 800 });
       }
     },
     []
   );
+
+  const fitAll = useCallback(() => {
+    const map = mapRef.current?.getMap();
+    if (!map || places.length === 0) return;
+    const lngs = places.map((p) => p.longitude);
+    const lats = places.map((p) => p.latitude);
+    const bounds: [[number, number], [number, number]] = [
+      [Math.min(...lngs), Math.min(...lats)],
+      [Math.max(...lngs), Math.max(...lats)],
+    ];
+    map.fitBounds(bounds, { padding: 60, duration: 800 });
+    onSelectPlace(null);
+  }, [places, onSelectPlace]);
 
   useEffect(() => {
     if (selectedPlace) flyToPlace(selectedPlace);
@@ -134,6 +147,17 @@ export default function Map({ places, selectedId, onSelectPlace, hoveredId, isAd
     >
       <NavigationControl position="bottom-right" showCompass={false} />
       <GeolocateControl position="bottom-right" />
+
+      <div className="absolute top-3 right-3 z-10">
+        <button
+          onClick={(e) => { e.stopPropagation(); fitAll(); }}
+          title="Fit all places"
+          className="w-[29px] h-[29px] flex items-center justify-center rounded-md bg-white text-[#333] shadow hover:bg-gray-100 transition-colors"
+          style={{ fontSize: "16px", lineHeight: 1 }}
+        >
+          ⊞
+        </button>
+      </div>
 
       {places.map((place) => {
         const isSelected = place.id === selectedId;
