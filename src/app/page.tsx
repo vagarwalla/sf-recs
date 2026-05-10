@@ -2,6 +2,8 @@ import { createClient } from "@supabase/supabase-js";
 import MapView from "@/components/MapView";
 import type { Place } from "@/lib/types";
 
+export const dynamic = "force-dynamic";
+
 async function getPlaces(): Promise<Place[]> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
