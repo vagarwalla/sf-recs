@@ -182,7 +182,7 @@ export default function Map({ places, selectedId, onSelectPlace, hoveredId, isAd
               onMouseLeave={() => setHoveredMarkerId(null)}
             >
               <div
-                className={`flex items-center justify-center rounded-full w-11 h-11 transition-shadow ${
+                className={`flex items-center justify-center rounded-full w-8 h-8 transition-shadow ${
                   isSelected || isHovered
                     ? "shadow-lg ring-2 ring-white/80"
                     : ""
