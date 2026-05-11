@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import dynamic from "next/dynamic";
 import type { Place, Category } from "@/lib/types";
 import MultiSelectDropdown from "./MultiSelectDropdown";
@@ -37,6 +37,16 @@ export default function MapView({ places: initialPlaces }: MapViewProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [sheetSnap, setSheetSnap] = useState<"peek" | "half" | "full">("peek");
+  const [fitTrigger, setFitTrigger] = useState(0);
+  const isFirstFilterRun = useRef(true);
+
+  useEffect(() => {
+    if (isFirstFilterRun.current) {
+      isFirstFilterRun.current = false;
+      return;
+    }
+    setFitTrigger((t) => t + 1);
+  }, [neighborhoodFilter]);
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
@@ -180,6 +190,7 @@ export default function MapView({ places: initialPlaces }: MapViewProps) {
             hoveredId={hoveredId}
             isAdmin={isAdmin}
             onPlaceUpdated={handlePlaceUpdated}
+            fitTrigger={fitTrigger}
           />
         </div>
       </div>
@@ -193,6 +204,7 @@ export default function MapView({ places: initialPlaces }: MapViewProps) {
           hoveredId={null}
           isAdmin={isAdmin}
           onPlaceUpdated={handlePlaceUpdated}
+          fitTrigger={fitTrigger}
         />
 
         <BottomSheet snap={sheetSnap} onSnapChange={setSheetSnap}>

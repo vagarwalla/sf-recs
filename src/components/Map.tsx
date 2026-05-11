@@ -81,9 +81,10 @@ interface MapProps {
   hoveredId: string | null;
   isAdmin?: boolean;
   onPlaceUpdated?: (place: Place) => void;
+  fitTrigger?: number;
 }
 
-export default function Map({ places, selectedId, onSelectPlace, hoveredId, isAdmin, onPlaceUpdated }: MapProps) {
+export default function Map({ places, selectedId, onSelectPlace, hoveredId, isAdmin, onPlaceUpdated, fitTrigger }: MapProps) {
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [zoom, setZoom] = useState(12.5);
@@ -122,6 +123,12 @@ export default function Map({ places, selectedId, onSelectPlace, hoveredId, isAd
   useEffect(() => {
     if (selectedPlace) flyToPlace(selectedPlace);
   }, [selectedPlace, flyToPlace]);
+
+  useEffect(() => {
+    if (fitTrigger && places.length > 0) {
+      fitAll();
+    }
+  }, [fitTrigger, fitAll, places.length]);
 
   if (!mounted || !MAPBOX_TOKEN) {
     return <div className="w-full h-full bg-background" />;
@@ -191,9 +198,9 @@ export default function Map({ places, selectedId, onSelectPlace, hoveredId, isAd
               >
                 <span className="leading-none" role="img">{icon}</span>
               </div>
-              {(showLabels || isSelected || (hoveredId === place.id)) && hoveredMarkerId !== place.id && (
+              {(showLabels || isSelected || hoveredId === place.id) && (
                 <span
-                  className={`mt-1 text-xs font-bold leading-tight max-w-[100px] truncate px-1.5 py-0.5 rounded-md ${
+                  className={`mt-1 text-xs font-bold leading-tight max-w-[100px] truncate px-1.5 py-0.5 rounded-md pointer-events-none ${
                     isSelected || isHovered
                       ? "text-foreground bg-background/80"
                       : "text-foreground/90 bg-background/60"

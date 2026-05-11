@@ -49,28 +49,33 @@ export default function MultiSelectDropdown({
 
   return (
     <div ref={ref} className="relative">
-      <button
+      <div
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium bg-card text-foreground border border-card-border hover:border-accent transition-colors min-h-[36px] w-full"
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium bg-card text-foreground border border-card-border hover:border-accent transition-colors min-h-[36px] w-full cursor-pointer select-none"
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setOpen(!open); } }}
       >
         <span className="text-xs text-muted shrink-0">{label}</span>
         <span className="truncate">{displayText}</span>
         {!allSelected && (
-          <button
+          <span
             onClick={(e) => {
               e.stopPropagation();
               clearAll();
             }}
-            className="ml-auto shrink-0 p-0.5 rounded hover:bg-card-border transition-colors"
+            className="ml-auto shrink-0 p-0.5 rounded hover:bg-card-border transition-colors cursor-pointer"
+            role="button"
+            aria-label="Clear selection"
           >
             <X size={12} />
-          </button>
+          </span>
         )}
         <ChevronDown
           size={14}
           className={`shrink-0 text-muted transition-transform ${open ? "rotate-180" : ""}`}
         />
-      </button>
+      </div>
 
       {open && (
         <div className="absolute top-full left-0 mt-1 w-56 max-h-64 overflow-y-auto rounded-lg bg-card border border-card-border shadow-lg z-50">
