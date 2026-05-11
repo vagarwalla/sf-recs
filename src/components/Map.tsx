@@ -182,12 +182,12 @@ export default function Map({ places, selectedId, onSelectPlace, hoveredId, isAd
               onMouseLeave={() => setHoveredMarkerId(null)}
             >
               <div
-                className={`flex items-center justify-center rounded-full w-7 h-7 transition-shadow ${
+                className={`flex items-center justify-center rounded-full w-9 h-9 transition-shadow ${
                   isSelected || isHovered
                     ? "shadow-lg ring-2 ring-white/80"
                     : ""
                 } ${isRec ? "bg-badge-rec/90" : "bg-badge-explore/90"}`}
-                style={{ fontSize: "13px" }}
+                style={{ fontSize: "18px" }}
               >
                 <span className="leading-none" role="img">{icon}</span>
               </div>
