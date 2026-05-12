@@ -6,6 +6,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Categories: Added, Chan
 
 ---
 
+## [2026-05-12] - New places
+
+### Added
+- Philmore Creamery (1840 Fillmore St, Fillmore) — explore
+- Lush Gelato (520 Columbus Ave, North Beach) — explore
+
+---
+
 ## [2026-05-09] - Visual refresh + new features
 
 ### Added
