@@ -35,6 +35,10 @@ const CUISINE_ICONS: Record<string, string> = {
   israeli: "🧆",
   "middle eastern": "🧆",
   turkish: "🧆",
+  "ice cream": "🍦",
+  gelato: "🍦",
+  "frozen yogurt": "🍦",
+  "soft serve": "🍦",
   dessert: "🍰",
   brunch: "🍳",
   cafe: "☕",
@@ -50,12 +54,15 @@ const CUISINE_ICONS: Record<string, string> = {
   steakhouse: "🥩",
 };
 
-function getCuisineIcon(cuisine: string | null): string {
-  if (!cuisine) return "🍽️";
-  const lower = cuisine.toLowerCase();
-  for (const [key, icon] of Object.entries(CUISINE_ICONS)) {
-    if (lower.includes(key)) return icon;
+function getPlaceIcon(cuisine: string | null, placeType?: string): string {
+  if (cuisine) {
+    const lower = cuisine.toLowerCase();
+    for (const [key, icon] of Object.entries(CUISINE_ICONS)) {
+      if (lower.includes(key)) return icon;
+    }
   }
+  if (placeType === "ice cream") return "🍦";
+  if (placeType === "dessert") return "🍰";
   return "🍽️";
 }
 
@@ -170,7 +177,7 @@ export default function Map({ places, selectedId, onSelectPlace, hoveredId, isAd
         const isSelected = place.id === selectedId;
         const isHovered = place.id === activeHoverId;
         const isRec = place.category === "rec";
-        const icon = getCuisineIcon(place.cuisine);
+        const icon = getPlaceIcon(place.cuisine, place.place_type);
 
         return (
           <Marker
@@ -245,7 +252,7 @@ export default function Map({ places, selectedId, onSelectPlace, hoveredId, isAd
             {(hoveredPlace.cuisine || hoveredPlace.rating) && (
               <div className="flex items-center gap-2 mt-1 text-xs text-muted">
                 {hoveredPlace.cuisine && (
-                  <span>{getCuisineIcon(hoveredPlace.cuisine)} {hoveredPlace.cuisine.split("/")[0].split("(")[0].trim()}</span>
+                  <span>{getPlaceIcon(hoveredPlace.cuisine, hoveredPlace.place_type)} {hoveredPlace.cuisine.split("/")[0].split("(")[0].trim()}</span>
                 )}
                 {hoveredPlace.rating && <StarDots rating={hoveredPlace.rating} />}
               </div>

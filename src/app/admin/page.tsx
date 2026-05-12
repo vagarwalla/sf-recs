@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Trash2, Save, LogIn, Plus, RefreshCw, Search, Star } from "lucide-react";
-import type { Place, Category, DietaryOption } from "@/lib/types";
+import type { Place, Category, DietaryOption, PlaceType } from "@/lib/types";
 import ThemeToggle from "@/components/ThemeToggle";
 
 function StarInput({ value, onChange }: { value: number | null; onChange: (v: number | null) => void }) {
@@ -41,6 +41,7 @@ export default function AdminPage() {
   const [newPlace, setNewPlace] = useState({
     name: "",
     category: "explore" as Category,
+    place_type: "restaurant" as PlaceType,
     cuisine: "",
     neighborhood: "",
     dietary_options: "Both" as DietaryOption,
@@ -125,7 +126,6 @@ export default function AdminPage() {
         ...newPlace,
         latitude: lat,
         longitude: lng,
-        place_type: "restaurant",
       }),
     });
     if (res.ok) {
@@ -134,6 +134,7 @@ export default function AdminPage() {
       setNewPlace({
         name: "",
         category: "explore",
+        place_type: "restaurant",
         cuisine: "",
         neighborhood: "",
         dietary_options: "Both",
@@ -169,6 +170,7 @@ export default function AdminPage() {
     setEditForm({
       name: place.name,
       category: place.category,
+      place_type: place.place_type,
       cuisine: place.cuisine,
       neighborhood: place.neighborhood,
       dietary_options: place.dietary_options,
@@ -268,6 +270,20 @@ export default function AdminPage() {
             >
               <option value="rec">Rec</option>
               <option value="explore">Explore</option>
+            </select>
+            <select
+              value={newPlace.place_type}
+              onChange={(e) =>
+                setNewPlace({ ...newPlace, place_type: e.target.value as PlaceType })
+              }
+              className="px-3 py-2 rounded-xl bg-input-bg border border-input-border text-foreground text-sm"
+            >
+              <option value="restaurant">Restaurant</option>
+              <option value="bar">Bar</option>
+              <option value="coffee">Coffee</option>
+              <option value="activity">Activity</option>
+              <option value="dessert">Dessert</option>
+              <option value="ice cream">Ice Cream</option>
             </select>
             <input
               placeholder="Cuisine"
@@ -404,16 +420,32 @@ export default function AdminPage() {
                         />
                       </td>
                       <td className="px-3 py-2">
-                        <select
-                          value={editForm.category || "explore"}
-                          onChange={(e) =>
-                            setEditForm({ ...editForm, category: e.target.value as Category })
-                          }
-                          className="px-2 py-1 rounded-lg bg-input-bg border border-input-border text-foreground text-sm"
-                        >
-                          <option value="rec">Rec</option>
-                          <option value="explore">Explore</option>
-                        </select>
+                        <div className="flex flex-col gap-1">
+                          <select
+                            value={editForm.category || "explore"}
+                            onChange={(e) =>
+                              setEditForm({ ...editForm, category: e.target.value as Category })
+                            }
+                            className="px-2 py-1 rounded-lg bg-input-bg border border-input-border text-foreground text-sm"
+                          >
+                            <option value="rec">Rec</option>
+                            <option value="explore">Explore</option>
+                          </select>
+                          <select
+                            value={editForm.place_type || "restaurant"}
+                            onChange={(e) =>
+                              setEditForm({ ...editForm, place_type: e.target.value as PlaceType })
+                            }
+                            className="px-2 py-1 rounded-lg bg-input-bg border border-input-border text-foreground text-sm"
+                          >
+                            <option value="restaurant">Restaurant</option>
+                            <option value="bar">Bar</option>
+                            <option value="coffee">Coffee</option>
+                            <option value="activity">Activity</option>
+                            <option value="dessert">Dessert</option>
+                            <option value="ice cream">Ice Cream</option>
+                          </select>
+                        </div>
                       </td>
                       <td className="px-3 py-2 hidden sm:table-cell">
                         <StarInput
@@ -460,15 +492,18 @@ export default function AdminPage() {
                         {place.neighborhood || "—"}
                       </td>
                       <td className="px-3 py-2">
-                        <span
-                          className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ${
-                            place.category === "rec"
-                              ? "bg-badge-rec/20 text-badge-rec"
-                              : "bg-badge-explore/20 text-badge-explore"
-                          }`}
-                        >
-                          {place.category}
-                        </span>
+                        <div className="flex flex-col gap-1">
+                          <span
+                            className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded w-fit ${
+                              place.category === "rec"
+                                ? "bg-badge-rec/20 text-badge-rec"
+                                : "bg-badge-explore/20 text-badge-explore"
+                            }`}
+                          >
+                            {place.category}
+                          </span>
+                          <span className="text-[10px] text-muted">{place.place_type}</span>
+                        </div>
                       </td>
                       <td className="px-3 py-2 hidden sm:table-cell">
                         {place.rating ? (

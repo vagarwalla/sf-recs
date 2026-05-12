@@ -1,6 +1,6 @@
 export type Category = "rec" | "explore";
 
-export type PlaceType = "restaurant" | "bar" | "coffee" | "activity";
+export type PlaceType = "restaurant" | "bar" | "coffee" | "activity" | "dessert" | "ice cream";
 
 export type DietaryOption = "Vegan" | "Veg" | "Both";
 

@@ -16,7 +16,7 @@ const places = [
   {
     name: "Philmore Creamery",
     category: "explore",
-    place_type: "restaurant",
+    place_type: "ice cream",
     cuisine: "Gelato",
     neighborhood: "Fillmore",
     dietary_options: null,
@@ -31,7 +31,7 @@ const places = [
   {
     name: "Lush Gelato",
     category: "explore",
-    place_type: "restaurant",
+    place_type: "ice cream",
     cuisine: "Gelato",
     neighborhood: "North Beach",
     dietary_options: null,
