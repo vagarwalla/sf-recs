@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { createClient } from "@supabase/supabase-js";
 import MapView from "@/components/MapView";
 import type { Place } from "@/lib/types";
@@ -25,5 +26,9 @@ async function getPlaces(): Promise<Place[]> {
 export default async function Home() {
   const places = await getPlaces();
 
-  return <MapView places={places} />;
+  return (
+    <Suspense>
+      <MapView places={places} />
+    </Suspense>
+  );
 }
