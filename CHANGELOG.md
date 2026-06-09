@@ -6,6 +6,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Categories: Added, Chan
 
 ---
 
+## [Unreleased]
+
+### Added
+- Filters sync to the URL (`?show=&diet=&cuisine=&area=&q=`) so a filtered view can be shared by link; opening such a link restores the filters.
+
 ## [2026-05-09] - Visual refresh + new features
 
 ### Added

@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import dynamic from "next/dynamic";
+import { useSearchParams } from "next/navigation";
 import type { Place, Category } from "@/lib/types";
 import MultiSelectDropdown from "./MultiSelectDropdown";
 import PlaceList from "./PlaceList";
@@ -27,13 +28,18 @@ interface MapViewProps {
   places: Place[];
 }
 
+// Filter <-> URL query param mapping, so a filtered view can be shared via link.
+const parseList = (v: string | null): string[] =>
+  v ? v.split(",").filter(Boolean) : [];
+
 export default function MapView({ places: initialPlaces }: MapViewProps) {
+  const searchParams = useSearchParams();
   const [places, setPlaces] = useState(initialPlaces);
-  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
-  const [dietaryFilter, setDietaryFilter] = useState<string[]>([]);
-  const [cuisineFilter, setCuisineFilter] = useState<string[]>([]);
-  const [neighborhoodFilter, setNeighborhoodFilter] = useState<string[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<string[]>(() => parseList(searchParams.get("show")));
+  const [dietaryFilter, setDietaryFilter] = useState<string[]>(() => parseList(searchParams.get("diet")));
+  const [cuisineFilter, setCuisineFilter] = useState<string[]>(() => parseList(searchParams.get("cuisine")));
+  const [neighborhoodFilter, setNeighborhoodFilter] = useState<string[]>(() => parseList(searchParams.get("area")));
+  const [searchQuery, setSearchQuery] = useState(() => searchParams.get("q") ?? "");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [sheetSnap, setSheetSnap] = useState<"peek" | "half" | "full">("peek");
@@ -47,6 +53,19 @@ export default function MapView({ places: initialPlaces }: MapViewProps) {
     }
     setFitTrigger((t) => t + 1);
   }, [neighborhoodFilter]);
+
+  // Reflect active filters in the URL so a filtered view is shareable.
+  // replaceState keeps it client-only (no server roundtrip on a force-dynamic page).
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (categoryFilter.length) params.set("show", categoryFilter.join(","));
+    if (dietaryFilter.length) params.set("diet", dietaryFilter.join(","));
+    if (cuisineFilter.length) params.set("cuisine", cuisineFilter.join(","));
+    if (neighborhoodFilter.length) params.set("area", neighborhoodFilter.join(","));
+    if (searchQuery) params.set("q", searchQuery);
+    const qs = params.toString();
+    window.history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
+  }, [categoryFilter, dietaryFilter, cuisineFilter, neighborhoodFilter, searchQuery]);
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
