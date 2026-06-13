@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+/* ===== Orient Express — Art Deco palette ===== */
+/* Dark (default): midnight teal sleeper car, brass fittings, ivory paper. */
+:root {
+  --background: #0e2229;
+  --foreground: #f3e7cd;
+  --card: #13303a;
+  --card-border: #1d4350;
+  --muted: #b9a87f;
+  --accent: #c9a227;          /* brass */
+  --accent-hover: #e8c75a;    /* bright brass */
+  --oxblood: #7a2230;         /* burgundy upholstery */
+  --paper: #f3e7cd;           /* clue-card paper */
+  --paper-ink: #241a10;       /* typewriter ink */
+  --paper-line: #d9c9a0;
+  --overlay: rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="light"] {
+  --background: #efe2c3;
+  --foreground: #1a2b30;
+  --card: #f7ecd2;
+  --card-border: #d9c9a0;
+  --muted: #6a5d44;
+  --accent: #9c7d18;
+  --accent-hover: #c9a227;
+  --oxblood: #7a2230;
+  --paper: #fbf4e2;
+  --paper-ink: #241a10;
+  --paper-line: #cdb98c;
+  --overlay: rgba(0, 0, 0, 0.2);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-border: var(--card-border);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-oxblood: var(--oxblood);
+  --color-paper: var(--paper);
+  --color-paper-ink: var(--paper-ink);
+  --color-paper-line: var(--paper-line);
+  --font-sans: var(--font-space-grotesk);
+  --font-display: var(--font-cinzel);
+  --font-type: var(--font-special-elite);
+}
+
+body {
+  background:
+    radial-gradient(120% 80% at 50% -10%, color-mix(in srgb, var(--background) 80%, #1a3a44) 0%, var(--background) 55%);
+  color: var(--foreground);
+  min-height: 100vh;
+}
+
+/* Deco section rule: a hairline brass divider used under step labels. */
+.deco-rule::after {
+  content: "";
+  display: block;
+  flex: 1;
+  height: 1px;
+  background: var(--accent);
+  opacity: 0.35;
+}
+.deco-rule::before {
+  content: "";
+  display: block;
+  width: 16px;
+  height: 1px;
+  background: var(--accent);
+  opacity: 0.7;
+}
+
+/* Ruled "telegram paper" background for clue cards. */
+.paper-lines {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0 27px,
+    color-mix(in srgb, var(--paper-line) 55%, transparent) 27px 28px
+  );
+}
