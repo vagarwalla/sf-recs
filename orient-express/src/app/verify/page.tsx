@@ -14,7 +14,7 @@ export default function VerifyPage() {
   const gridTotal = cells.length;
 
   const cluesTranscribed = CLUES.filter((c) => c.text != null).length;
-  const cluesVerified = CLUES.filter((c) => c.verified).length;
+  const cluesUncertain = CLUES.filter((c) => c.uncertain).length;
 
   return (
     <main className="mx-auto max-w-[760px] px-4 pb-20 pt-4">
@@ -42,7 +42,7 @@ export default function VerifyPage() {
       <div className="grid grid-cols-3 gap-3 mt-5">
         <Stat label="Grid cells filled" value={`${gridFilled} / ${gridTotal}`} />
         <Stat label="Clues transcribed" value={`${cluesTranscribed} / ${CLUES.length}`} />
-        <Stat label="Clues verified" value={`${cluesVerified} / ${CLUES.length}`} />
+        <Stat label="Flagged to check" value={`${cluesUncertain}`} />
       </div>
 
       {/* grid tables */}
@@ -116,10 +116,12 @@ export default function VerifyPage() {
                     "shrink-0 rounded-full px-2 py-0.5 text-[8px] font-display tracking-wider uppercase mt-0.5",
                     c.verified
                       ? "border border-accent/60 text-accent"
-                      : "border border-oxblood/60 text-oxblood",
+                      : c.uncertain
+                        ? "border border-accent-hover text-accent-hover bg-accent-hover/10"
+                        : "border border-oxblood/60 text-oxblood",
                   ].join(" ")}
                 >
-                  {c.verified ? "verified" : "unverified"}
+                  {c.verified ? "verified" : c.uncertain ? "check" : "unverified"}
                 </span>
               )}
             </div>

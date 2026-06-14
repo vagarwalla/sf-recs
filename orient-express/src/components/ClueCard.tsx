@@ -17,7 +17,9 @@ export default function ClueCard({
 }) {
   const noNumber = clueNumber == null;
   const noText = !noNumber && (!clue || clue.text == null);
-  const unverified = !noNumber && !noText && clue ? !clue.verified : false;
+  const hasText = !noNumber && !noText && !!clue;
+  const unverified = hasText ? !clue!.verified : false;
+  const uncertain = hasText ? clue!.uncertain : false;
 
   return (
     <div className="relative rounded-md border border-paper-line bg-paper text-paper-ink paper-lines shadow-[0_12px_30px_rgba(0,0,0,0.5)] p-5 pt-4">
@@ -63,9 +65,11 @@ export default function ClueCard({
                 ? `Clue #${clueNumber} — full text not yet transcribed. Read it from the booklet, then add it on the verify page.`
                 : clue!.text}
             </p>
-            {unverified && (
+            {(unverified || uncertain) && (
               <p className="mt-3 inline-block rounded-full border border-oxblood/50 px-2.5 py-1 font-display text-[8px] tracking-[0.18em] text-oxblood uppercase">
-                Unverified · confirm against booklet
+                {uncertain
+                  ? "Hard to read · double-check this one"
+                  : "Unverified · confirm against booklet"}
               </p>
             )}
           </>

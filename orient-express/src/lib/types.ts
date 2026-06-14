@@ -9,6 +9,9 @@ export interface Clue {
   text: string | null;
   // false until the text has been confirmed against the physical clue book.
   verified: boolean;
+  // true when the photo was hard to read and the text is a best-effort guess
+  // that should be double-checked first.
+  uncertain: boolean;
 }
 
 // One target within an action category (a suspect, crewman, area, or telegram subject).
