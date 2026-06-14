@@ -21,6 +21,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Categories: Added, Chan
 
 ---
 
+## [2026-06-14] - Bakery icon
+
+### Added
+- Bakery map marker icon (🥐) — places with a `cuisine` of "Bakery"/"Pastry"/"Patisserie"/"Boulangerie" now render a distinct bakery icon instead of the 🍰 dessert or generic 🍽️ icon
+- `scripts/retag-cuisine.ts` (`npm run retag`) — set the `cuisine` field for places by name; defaults to retagging "13" and "Confections" as Bakery
+
+---
+
 ## [2026-05-09] - Visual refresh + new features
 
 ### Added
