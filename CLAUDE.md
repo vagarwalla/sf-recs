@@ -139,7 +139,7 @@ create table cached_metadata (
 );
 ```
 
-**Data imported:** 62 restaurants (33 recs, 29 explore) from the Excel spreadsheet on 2026-05-09. The Excel uses "Exploit" for recs — the import script maps this to "rec".
+**Data imported:** 62 restaurants (33 recs, 29 explore) from the Excel spreadsheet on 2026-05-09. The Excel uses "Exploit" for recs — the import script maps this to "rec". On 2026-06-14, 8 more `explore` places near Lands End / the Presidio were added (now 70 total) — see `supabase/seed_lands_end_presidio.sql`.
 
 RLS: public SELECT on both tables, service-role-only INSERT/UPDATE/DELETE.
 

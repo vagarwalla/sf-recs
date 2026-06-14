@@ -6,6 +6,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Categories: Added, Chan
 
 ---
 
+## [2026-06-14] - Lands End / Presidio restaurants
+
+### Added
+- 8 vegetarian/vegan-friendly `explore` restaurants near Lands End & the Presidio, filling the northwest gap on the map: Burma Superstar, Greens, Dalida, Pizzetta 211, Aziza, Kitchen Istanbul, Dragon Beaux, Mandalay
+- `supabase/seed_lands_end_presidio.sql` — idempotent seed for the new places
+- Rows appended to `data/sf_veg_vegan_restaurants.xlsx` (now 70 restaurants) so the canonical import stays in sync
+
+---
+
 ## [2026-05-09] - Visual refresh + new features
 
 ### Added
