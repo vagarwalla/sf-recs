@@ -44,6 +44,7 @@ export default function AdminPage() {
     cuisine: "",
     neighborhood: "",
     dietary_options: "Both" as DietaryOption,
+    gluten_free: false,
     notes: "",
     rating: null as number | null,
     latitude: "",
@@ -137,6 +138,7 @@ export default function AdminPage() {
         cuisine: "",
         neighborhood: "",
         dietary_options: "Both",
+        gluten_free: false,
         notes: "",
         rating: null,
         latitude: "",
@@ -172,6 +174,7 @@ export default function AdminPage() {
       cuisine: place.cuisine,
       neighborhood: place.neighborhood,
       dietary_options: place.dietary_options,
+      gluten_free: place.gluten_free,
       notes: place.notes,
       rating: place.rating,
       price_level: place.price_level,
@@ -292,6 +295,15 @@ export default function AdminPage() {
               <option value="Veg">Vegetarian</option>
               <option value="Both">Both</option>
             </select>
+            <label className="flex items-center gap-2 px-3 py-2 text-sm text-foreground cursor-pointer">
+              <input
+                type="checkbox"
+                checked={newPlace.gluten_free}
+                onChange={(e) => setNewPlace({ ...newPlace, gluten_free: e.target.checked })}
+                className="w-4 h-4 accent-accent"
+              />
+              Gluten-free options
+            </label>
             <select
               value={newPlace.price_level}
               onChange={(e) => setNewPlace({ ...newPlace, price_level: e.target.value })}
@@ -414,6 +426,15 @@ export default function AdminPage() {
                           <option value="rec">Rec</option>
                           <option value="explore">Explore</option>
                         </select>
+                        <label className="flex items-center gap-1 mt-1.5 text-xs text-muted cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={editForm.gluten_free ?? false}
+                            onChange={(e) => setEditForm({ ...editForm, gluten_free: e.target.checked })}
+                            className="w-3.5 h-3.5 accent-accent"
+                          />
+                          GF
+                        </label>
                       </td>
                       <td className="px-3 py-2 hidden sm:table-cell">
                         <StarInput
@@ -452,6 +473,11 @@ export default function AdminPage() {
                         onClick={() => startEdit(place)}
                       >
                         {place.name}
+                        {place.gluten_free && (
+                          <span className="ml-1.5 text-[10px] font-bold uppercase px-1 py-0.5 rounded bg-accent-orange/20 text-accent-orange align-middle">
+                            GF
+                          </span>
+                        )}
                       </td>
                       <td className="px-3 py-2 text-muted hidden md:table-cell">
                         {place.cuisine || "—"}

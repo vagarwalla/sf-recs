@@ -6,6 +6,21 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Categories: Added, Chan
 
 ---
 
+## [2026-06-14] - Gluten-free dietary option
+
+### Added
+- `gluten_free` boolean column on `places` (migration `003_gluten_free.sql`) — an *additive* attribute orthogonal to `dietary_options`, so a place can be Vegan/Veg/Both **and** flag gluten-free options. Bar is "has gluten-free options," not a celiac-safe guarantee.
+- "Gluten-free" pill in the Diet filter; when selected it's an AND constraint (intersects with any vegan/vegetarian selection).
+- Gluten-free badge ("GF") on public place cards and admin rows; gluten-free checkbox in admin add/edit forms.
+- Marked 16 existing places with gluten-free options (research-backed: Oren's Hummus, Pica Pica, all 3 Joyride Pizza, Greens, Wildseed, Udupi Palace, Diwali, Golden Era, Nopalito, La Mar, Mochica, Garden Creamery, Koolfi Creamery, Arepas Latin Cuisine).
+- Added **Purple Rice** (Korean, Lower Haight) — labeled gluten-free + vegan menu.
+- `import.ts` now reads an optional "Gluten Free" Excel column (forward-compatible; defaults to false).
+
+### Note
+- The `data/sf_veg_vegan_restaurants.xlsx` seed was left unchanged; migration `003_gluten_free.sql` is the authoritative source for the gluten-free data and the Purple Rice row.
+
+---
+
 ## [2026-05-09] - Visual refresh + new features
 
 ### Added

@@ -17,7 +17,7 @@ export async function PATCH(
   const updates: Record<string, unknown> = { updated_at: new Date().toISOString() };
   const allowedFields = [
     "name", "category", "place_type", "cuisine", "neighborhood",
-    "dietary_options", "notes", "rating", "tags", "latitude", "longitude",
+    "dietary_options", "gluten_free", "notes", "rating", "tags", "latitude", "longitude",
     "website", "price_level", "google_place_id",
   ];
   for (const field of allowedFields) {

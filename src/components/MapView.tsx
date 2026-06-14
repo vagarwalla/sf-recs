@@ -17,10 +17,13 @@ const CATEGORY_OPTIONS: { value: string; label: string }[] = [
   { value: "explore", label: "Explore" },
 ];
 
+const GLUTEN_FREE = "Gluten-free";
+
 const DIETARY_OPTIONS: { value: string; label: string }[] = [
   { value: "Vegan", label: "Vegan" },
   { value: "Veg", label: "Vegetarian" },
   { value: "Both", label: "Both" },
+  { value: GLUTEN_FREE, label: "Gluten-free" },
 ];
 
 interface MapViewProps {
@@ -91,7 +94,11 @@ export default function MapView({ places: initialPlaces }: MapViewProps) {
   const filtered = useMemo(() => {
     return places.filter((p) => {
       if (categoryFilter.length > 0 && !categoryFilter.includes(p.category)) return false;
-      if (dietaryFilter.length > 0 && p.dietary_options && !dietaryFilter.includes(p.dietary_options)) return false;
+      // Gluten-free is an additive attribute: when selected it's an AND constraint,
+      // independent of the vegan/vegetarian value.
+      if (dietaryFilter.includes(GLUTEN_FREE) && !p.gluten_free) return false;
+      const vegFilter = dietaryFilter.filter((d) => d !== GLUTEN_FREE);
+      if (vegFilter.length > 0 && p.dietary_options && !vegFilter.includes(p.dietary_options)) return false;
       if (cuisineFilter.length > 0) {
         const base = p.cuisine?.split("/")[0].split("(")[0].trim().toLowerCase() ?? "";
         if (!cuisineFilter.some((c) => base.includes(c.toLowerCase()))) return false;

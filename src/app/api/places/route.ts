@@ -44,6 +44,7 @@ export async function POST(req: NextRequest) {
       cuisine: body.cuisine || null,
       neighborhood: body.neighborhood || null,
       dietary_options: body.dietary_options || null,
+      gluten_free: body.gluten_free ?? false,
       notes: body.notes || null,
       tags: body.tags || [],
       latitude: body.latitude,

@@ -13,6 +13,7 @@ export interface Place {
   cuisine: string | null;
   neighborhood: string | null;
   dietary_options: DietaryOption | null;
+  gluten_free: boolean;
   notes: string | null;
   rating: number | null;
   tags: string[];
