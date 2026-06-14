@@ -6,6 +6,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Categories: Added, Chan
 
 ---
 
+## [2026-06-14] - Bakery cuisine retag (completes Bakery icon work)
+
+### Changed
+- Retagged the three actual bakeries from `cuisine="Dessert"` to `cuisine="Bakery"` so they render the 🥐 icon: **Tartine Bakery – Guerrero (flagship)**, **Tartine Manufactory**, **Kahnfections**.
+- `scripts/retag-cuisine.ts` defaults updated to those three names — the prior defaults ("13", "Confections") never existed in the database.
+
+### Note
+- The earlier handoff's targets were stale: "Confections" was really **Kahnfections**, and "13" does not exist as a place (skipped). See `HANDOFF.md`.
+
+---
+
 ## [2026-06-14] - Gluten-free dietary option
 
 ### Added
