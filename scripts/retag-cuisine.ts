@@ -8,8 +8,8 @@
  * 🍰 dessert icon or the generic 🍽️ fallback.
  *
  * Usage:
- *   npx tsx scripts/retag-cuisine.ts "13" Bakery
- *   npx tsx scripts/retag-cuisine.ts "Confections" Bakery
+ *   npx tsx scripts/retag-cuisine.ts "Tartine Bakery" Bakery
+ *   npx tsx scripts/retag-cuisine.ts "Kahnfections" Bakery
  *   # or run the built-in bakery defaults below with no args:
  *   npx tsx scripts/retag-cuisine.ts
  *
@@ -22,8 +22,9 @@ import { createClient } from "@supabase/supabase-js";
 
 // [name, cuisine] pairs applied when the script is run with no arguments.
 const DEFAULTS: [string, string][] = [
-  ["13", "Bakery"],
-  ["Confections", "Bakery"],
+  ["Tartine Bakery", "Bakery"],
+  ["Tartine Manufactory", "Bakery"],
+  ["Kahnfections", "Bakery"],
 ];
 
 async function main() {
