@@ -193,6 +193,14 @@ export default function PlaceCard({
                 {place.dietary_options}
               </span>
             )}
+            {place.gluten_free && (
+              <span className="flex items-center gap-1 font-bold text-accent-orange" title="Gluten-free options available">
+                <span className="inline-flex items-center justify-center w-4 h-4 rounded-full border border-accent-orange text-[8px] leading-none">
+                  GF
+                </span>
+                Gluten-free
+              </span>
+            )}
           </div>
 
           {editing ? (

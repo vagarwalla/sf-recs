@@ -19,6 +19,12 @@ function mapCategory(raw: string): "rec" | "explore" {
   throw new Error(`Unknown category: ${raw}`);
 }
 
+function parseGlutenFree(raw: unknown): boolean {
+  if (raw === true) return true;
+  const v = String(raw ?? "").trim().toLowerCase();
+  return v === "yes" || v === "true" || v === "y" || v === "gf" || v === "1";
+}
+
 async function main() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -42,6 +48,7 @@ async function main() {
     cuisine: row["Cuisine"] ? String(row["Cuisine"]) : null,
     neighborhood: row["Neighborhood"] ? String(row["Neighborhood"]) : null,
     dietary_options: row["Options Available"] ? String(row["Options Available"]) : null,
+    gluten_free: parseGlutenFree(row["Gluten Free"]),
     notes: row["Notes"] ? String(row["Notes"]) : null,
     latitude: Number(row["Latitude"]),
     longitude: Number(row["Longitude"]),
