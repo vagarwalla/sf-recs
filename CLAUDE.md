@@ -3,6 +3,8 @@
 Personal recommendations map — restaurants, bars, coffee, activities, and more in SF. Public site at `recs.vaidehiagarwalla.com`.
 
 > **Read SPEC.md before making any change.** If a change contradicts an acceptance criterion, stop and flag it.
+>
+> **Read TASTE.md before recommending places.** It holds the owner's taste profile and a blacklist (disliked + closed places to never recommend).
 
 ## Overview
 
