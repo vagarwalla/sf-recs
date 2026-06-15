@@ -8,8 +8,19 @@
 ## Taste Profile
 
 **Hard constraint**
-- **Always vegetarian/vegan-friendly.** Every saved place has veg/vegan options.
-  This is non-negotiable — never recommend a place without real veg options.
+- **Strictly vegetarian** (eats veg incl. dairy/eggs; **no meat, no seafood**).
+  Every recommended place must have real vegetarian options — non-negotiable.
+
+**Variety rule**
+- **Soft balance:** aim for a mix of cuisines in any shortlist, but 2 of a
+  strong-match cuisine is fine if both are genuinely excellent.
+
+**Spice**
+- **Medium** — enjoys moderate heat, nothing punishing.
+
+**Occasions to cover**
+- Optimize across all of: **quick casual / takeout**, **sit-down dinners**
+  (incl. occasional acclaimed splurge), **coffee & dessert**, and **brunch / daytime**.
 
 **Price & vibe**
 - Skews **casual to mid-range** (`$`–`$$`; ~26 of 33 recs are `$$`).
