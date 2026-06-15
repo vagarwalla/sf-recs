@@ -6,6 +6,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Categories: Added, Chan
 
 ---
 
+## [2026-06-14] - Distinct dessert marker color
+
+### Changed
+- Dessert map markers now use a fixed pink fill (`#ec4899`) instead of the rec/explore category color, so they read distinctly from bakery (🥐) pins. Added a `CUISINE_MARKER_COLORS` per-cuisine fill override in `Map.tsx`; bakeries keep the category color.
+
+---
+
 ## [2026-06-14] - Bakery cuisine retag (completes Bakery icon work)
 
 ### Changed
