@@ -32,6 +32,26 @@
   Koolfi (cardamom kulfi), Garden Creamery (Thai tea / black sesame).
 - 👎 Candy-sweet shops — see Blacklist.
 
+**Variety & cuisine balance**
+- Wants **variety across cuisines** — don't lean too heavily on any one cuisine
+  when recommending a set.
+- Is Indian but **does not want Indian searched by default**. Suggest it only when
+  it's genuinely standout, not as a go-to.
+- **Always up to try new/unfamiliar cuisines** *if they're especially highly rated*.
+
+**Ingredient preferences**
+- Prefers **less dairy** and **fewer heavy fried foods**. Occasional exceptions are
+  fine — treat heavy/fried/dairy-rich as the exception, not the default pick.
+
+**Desserts (refined)**
+- Wants **authentic, natural flavors** or genuine experimentation — always
+  **not too sweet**, high-quality ingredients.
+
+**Chains & sourcing**
+- **Strong dispreference for big chains** (often not as good). BUT defer to
+  **Yelp / review consensus** over a blanket anti-chain rule — a well-reviewed
+  spot wins regardless.
+
 **Geography**
 - Mission-heavy, but spread across SF.
 
