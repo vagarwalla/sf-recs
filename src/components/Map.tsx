@@ -63,6 +63,21 @@ function getCuisineIcon(cuisine: string | null): string {
   return "🍽️";
 }
 
+// Cuisines that override the marker fill (otherwise it follows rec/explore).
+// Dessert pins get a pink fill so they read distinctly from bakery 🥐 pins.
+const CUISINE_MARKER_COLORS: Record<string, string> = {
+  dessert: "#ec4899", // pink-500
+};
+
+function getCuisineColor(cuisine: string | null): string | null {
+  if (!cuisine) return null;
+  const lower = cuisine.toLowerCase();
+  for (const [key, color] of Object.entries(CUISINE_MARKER_COLORS)) {
+    if (lower.includes(key)) return color;
+  }
+  return null;
+}
+
 function StarDots({ rating }: { rating: number }) {
   return (
     <span className="flex gap-px">
@@ -175,6 +190,7 @@ export default function Map({ places, selectedId, onSelectPlace, hoveredId, isAd
         const isHovered = place.id === activeHoverId;
         const isRec = place.category === "rec";
         const icon = getCuisineIcon(place.cuisine);
+        const cuisineColor = getCuisineColor(place.cuisine);
 
         return (
           <Marker
@@ -197,8 +213,11 @@ export default function Map({ places, selectedId, onSelectPlace, hoveredId, isAd
                   isSelected || isHovered
                     ? "shadow-lg ring-2 ring-white/80"
                     : ""
-                } ${isRec ? "bg-badge-rec/90" : "bg-badge-explore/90"}`}
-                style={{ fontSize: "22px" }}
+                } ${cuisineColor ? "" : isRec ? "bg-badge-rec/90" : "bg-badge-explore/90"}`}
+                style={{
+                  fontSize: "22px",
+                  ...(cuisineColor ? { backgroundColor: cuisineColor } : {}),
+                }}
               >
                 <span className="leading-none" role="img">{icon}</span>
               </div>
