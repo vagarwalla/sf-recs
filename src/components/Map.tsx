@@ -48,6 +48,8 @@ const CUISINE_ICONS: Record<string, string> = {
   "detroit-style": "🍕",
   vegetarian: "🌱",
   californian: "🥗",
+  sandwich: "🥪",
+  deli: "🥪",
   burger: "🍔",
   korean: "🍖",
   thai: "🍜",

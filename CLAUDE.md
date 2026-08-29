@@ -142,7 +142,7 @@ create table cached_metadata (
 );
 ```
 
-**Data imported:** 62 restaurants (33 recs, 29 explore) from the Excel spreadsheet on 2026-05-09. The Excel uses "Exploit" for recs — the import script maps this to "rec". Migration `003_gluten_free.sql` later added a `gluten_free` flag, marked 16 existing places with gluten-free options, and added Purple Rice (Lower Haight).
+**Data imported:** 62 restaurants (33 recs, 29 explore) from the Excel spreadsheet on 2026-05-09. The Excel uses "Exploit" for recs — the import script maps this to "rec". Migration `003_gluten_free.sql` later added a `gluten_free` flag, marked 16 existing places with gluten-free options, and added Purple Rice (Lower Haight). Migration `004_sandys.sql` added Sandy's (muffuletta, Upper Haight) as a rec.
 
 RLS: public SELECT on both tables, service-role-only INSERT/UPDATE/DELETE.
 

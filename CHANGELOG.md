@@ -6,6 +6,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Categories: Added, Chan
 
 ---
 
+## [2026-08-29] - Add Sandy's (muffuletta) as a rec
+
+### Added
+- **Sandy's** (Sandwiches, Upper Haight) added as a `rec` via migration `004_sandys.sql` — New Orleans-style muffuletta shop at 1457 Haight St; the note points at the vegetarian muffuletta (Cajun-roasted maitake mushrooms in place of the cold cuts).
+- Sandwich map marker icon (🥪) for `cuisine` matching "sandwich"/"deli" — previously fell back to the generic 🍽️.
+
+### Note
+- The migration is the authoritative source for the row (same pattern as Purple Rice in `003_gluten_free.sql`); apply it in Supabase, or re-add via `/admin` search to also link the `google_place_id` for cached metadata.
+
+---
+
 ## [2026-06-14] - Bakery cuisine retag (completes Bakery icon work)
 
 ### Changed
