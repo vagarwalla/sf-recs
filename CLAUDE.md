@@ -72,7 +72,7 @@ sf-recs/
       add/
         page.tsx                  # Quick-add: search Google, autofill, one Enter to save
       admin/
-        page.tsx                  # Admin: table, inline edit, remove, refresh
+        page.tsx                  # Admin: table, inline edit, remove, refresh (no add form)
       api/
         places/
           route.ts                # GET all places (public) | POST add (admin)

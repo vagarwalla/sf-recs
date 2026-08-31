@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import Link from "next/link";
 import { Trash2, Save, LogIn, Plus, RefreshCw, Search, Star } from "lucide-react";
-import type { Place, Category, DietaryOption } from "@/lib/types";
+import type { Place, Category } from "@/lib/types";
 import ThemeToggle from "@/components/ThemeToggle";
 import StarInput from "@/components/StarInput";
 
@@ -14,21 +15,6 @@ export default function AdminPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<Place>>({});
-  const [addMode, setAddMode] = useState(false);
-  const [newPlace, setNewPlace] = useState({
-    name: "",
-    category: "explore" as Category,
-    cuisine: "",
-    neighborhood: "",
-    dietary_options: "Both" as DietaryOption,
-    gluten_free: false,
-    notes: "",
-    rating: null as number | null,
-    latitude: "",
-    longitude: "",
-    website: "",
-    price_level: "$$",
-  });
   const [message, setMessage] = useState("");
   const messageTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
 
@@ -85,48 +71,6 @@ export default function AdminPage() {
       setPlaces((p) => p.map((x) => (x.id === id ? updated : x)));
       setEditingId(null);
       showMessage(`Saved "${updated.name}"`);
-    }
-  };
-
-  const handleAdd = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const lat = parseFloat(newPlace.latitude);
-    const lng = parseFloat(newPlace.longitude);
-    if (isNaN(lat) || isNaN(lng)) {
-      showMessage("Invalid latitude/longitude");
-      return;
-    }
-    const res = await fetch("/api/places", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...newPlace,
-        latitude: lat,
-        longitude: lng,
-        place_type: "restaurant",
-      }),
-    });
-    if (res.ok) {
-      await fetchPlaces();
-      setAddMode(false);
-      setNewPlace({
-        name: "",
-        category: "explore",
-        cuisine: "",
-        neighborhood: "",
-        dietary_options: "Both",
-        gluten_free: false,
-        notes: "",
-        rating: null,
-        latitude: "",
-        longitude: "",
-        website: "",
-        price_level: "$$",
-      });
-      showMessage("Place added");
-    } else {
-      const err = await res.json();
-      showMessage(`Error: ${err.error}`);
     }
   };
 
@@ -210,13 +154,13 @@ export default function AdminPage() {
               <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
               Refresh
             </button>
-            <button
-              onClick={() => setAddMode(!addMode)}
+            <Link
+              href="/add"
               className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-accent text-pill-active-text text-sm font-bold hover:bg-accent-hover"
             >
               <Plus size={14} />
               Add Place
-            </button>
+            </Link>
             <ThemeToggle />
           </div>
         </div>
@@ -225,118 +169,6 @@ export default function AdminPage() {
           <div className="mb-4 px-4 py-2 rounded-xl bg-card border border-card-border text-sm text-foreground">
             {message}
           </div>
-        )}
-
-        {addMode && (
-          <form
-            onSubmit={handleAdd}
-            className="mb-6 p-4 rounded-xl bg-card border border-card-border grid grid-cols-2 md:grid-cols-3 gap-3"
-          >
-            <input
-              required
-              placeholder="Name *"
-              value={newPlace.name}
-              onChange={(e) => setNewPlace({ ...newPlace, name: e.target.value })}
-              className="px-3 py-2 rounded-xl bg-input-bg border border-input-border text-foreground text-sm col-span-2 md:col-span-1"
-            />
-            <select
-              value={newPlace.category}
-              onChange={(e) =>
-                setNewPlace({ ...newPlace, category: e.target.value as Category })
-              }
-              className="px-3 py-2 rounded-xl bg-input-bg border border-input-border text-foreground text-sm"
-            >
-              <option value="rec">Rec</option>
-              <option value="explore">Explore</option>
-            </select>
-            <input
-              placeholder="Cuisine"
-              value={newPlace.cuisine}
-              onChange={(e) => setNewPlace({ ...newPlace, cuisine: e.target.value })}
-              className="px-3 py-2 rounded-xl bg-input-bg border border-input-border text-foreground text-sm"
-            />
-            <input
-              placeholder="Neighborhood"
-              value={newPlace.neighborhood}
-              onChange={(e) => setNewPlace({ ...newPlace, neighborhood: e.target.value })}
-              className="px-3 py-2 rounded-xl bg-input-bg border border-input-border text-foreground text-sm"
-            />
-            <select
-              value={newPlace.dietary_options}
-              onChange={(e) =>
-                setNewPlace({ ...newPlace, dietary_options: e.target.value as DietaryOption })
-              }
-              className="px-3 py-2 rounded-xl bg-input-bg border border-input-border text-foreground text-sm"
-            >
-              <option value="Vegan">Vegan</option>
-              <option value="Veg">Vegetarian</option>
-              <option value="Both">Both</option>
-            </select>
-            <label className="flex items-center gap-2 px-3 py-2 text-sm text-foreground cursor-pointer">
-              <input
-                type="checkbox"
-                checked={newPlace.gluten_free}
-                onChange={(e) => setNewPlace({ ...newPlace, gluten_free: e.target.checked })}
-                className="w-4 h-4 accent-accent"
-              />
-              Gluten-free options
-            </label>
-            <select
-              value={newPlace.price_level}
-              onChange={(e) => setNewPlace({ ...newPlace, price_level: e.target.value })}
-              className="px-3 py-2 rounded-xl bg-input-bg border border-input-border text-foreground text-sm"
-            >
-              <option value="$">$</option>
-              <option value="$$">$$</option>
-              <option value="$$$">$$$</option>
-              <option value="$$$$">$$$$</option>
-            </select>
-            <div className="flex items-center gap-2 px-3 py-2">
-              <span className="text-sm text-muted">Rating:</span>
-              <StarInput value={newPlace.rating} onChange={(v) => setNewPlace({ ...newPlace, rating: v })} />
-            </div>
-            <input
-              required
-              placeholder="Latitude *"
-              value={newPlace.latitude}
-              onChange={(e) => setNewPlace({ ...newPlace, latitude: e.target.value })}
-              className="px-3 py-2 rounded-xl bg-input-bg border border-input-border text-foreground text-sm"
-            />
-            <input
-              required
-              placeholder="Longitude *"
-              value={newPlace.longitude}
-              onChange={(e) => setNewPlace({ ...newPlace, longitude: e.target.value })}
-              className="px-3 py-2 rounded-xl bg-input-bg border border-input-border text-foreground text-sm"
-            />
-            <input
-              placeholder="Website URL"
-              value={newPlace.website}
-              onChange={(e) => setNewPlace({ ...newPlace, website: e.target.value })}
-              className="px-3 py-2 rounded-xl bg-input-bg border border-input-border text-foreground text-sm"
-            />
-            <input
-              placeholder="Notes"
-              value={newPlace.notes}
-              onChange={(e) => setNewPlace({ ...newPlace, notes: e.target.value })}
-              className="px-3 py-2 rounded-xl bg-input-bg border border-input-border text-foreground text-sm col-span-2"
-            />
-            <div className="flex gap-2 col-span-2 md:col-span-1">
-              <button
-                type="submit"
-                className="flex-1 px-3 py-2 rounded-full bg-accent text-pill-active-text text-sm font-bold hover:bg-accent-hover"
-              >
-                Add
-              </button>
-              <button
-                type="button"
-                onClick={() => setAddMode(false)}
-                className="px-3 py-2 rounded-full bg-pill-bg text-foreground text-sm font-bold hover:bg-card-border"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
         )}
 
         <div className="relative mb-4">

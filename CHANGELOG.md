@@ -6,6 +6,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Categories: Added, Chan
 
 ---
 
+## [2026-08-31] - Remove the `/admin` add form
+
+### Removed
+- The add-place form in `/admin` (`addMode`/`newPlace` state, `handleAdd`, the toggle button and its form JSX). It required hand-typing latitude and longitude and never set `google_place_id`, so places added through it never got cached metadata. `/add` supersedes it.
+- The "Add Place" button is now a link to `/add`. Everything else in `/admin` — the table, inline editing, delete, refresh, search — is unchanged.
+
+> Landed separately from the `/add` commit so this one can be reverted on its own if `/add` misbehaves in production.
+
+---
+
 ## [2026-08-31] - Quick-add page at `/add`
 
 ### Added
