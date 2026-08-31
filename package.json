@@ -8,8 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "idea": "tsx scripts/add-idea.ts",
-    "retag": "tsx scripts/retag-cuisine.ts",
-    "add-places": "tsx scripts/add-places.ts"
+    "retag": "tsx --env-file-if-exists=.env scripts/retag-cuisine.ts",
+    "add-places": "tsx --env-file-if-exists=.env scripts/add-places.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.4",

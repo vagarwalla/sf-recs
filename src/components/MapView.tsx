@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import type { Place, Category } from "@/lib/types";
 import MultiSelectDropdown from "./MultiSelectDropdown";
+import FilterPills from "./FilterPills";
 import PlaceList from "./PlaceList";
 import BottomSheet from "./BottomSheet";
 import ThemeToggle from "./ThemeToggle";
@@ -16,6 +17,20 @@ const MapComponent = dynamic(() => import("./Map"), { ssr: false });
 const CATEGORY_OPTIONS: { value: string; label: string }[] = [
   { value: "rec", label: "Recs" },
   { value: "explore", label: "Explore" },
+];
+
+/**
+ * Food vs attractions. `activity` is the only non-food place type, so the split
+ * is that one value against the other three rather than a per-type filter —
+ * pills, not a dropdown, because it is the coarsest cut of the map and worth
+ * one tap.
+ */
+type Kind = "all" | "food" | "attractions";
+
+const KIND_OPTIONS: { value: Kind; label: string }[] = [
+  { value: "all", label: "All" },
+  { value: "food", label: "Food" },
+  { value: "attractions", label: "Attractions" },
 ];
 
 const GLUTEN_FREE = "Gluten-free";
@@ -34,6 +49,7 @@ interface MapViewProps {
 export default function MapView({ places: initialPlaces }: MapViewProps) {
   const [places, setPlaces] = useState(initialPlaces);
   const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
+  const [kindFilter, setKindFilter] = useState<Kind>("all");
   const [dietaryFilter, setDietaryFilter] = useState<string[]>([]);
   const [cuisineFilter, setCuisineFilter] = useState<string[]>([]);
   const [neighborhoodFilter, setNeighborhoodFilter] = useState<string[]>([]);
@@ -95,6 +111,9 @@ export default function MapView({ places: initialPlaces }: MapViewProps) {
   const filtered = useMemo(() => {
     return places.filter((p) => {
       if (categoryFilter.length > 0 && !categoryFilter.includes(p.category)) return false;
+      const isAttraction = p.place_type === "activity";
+      if (kindFilter === "food" && isAttraction) return false;
+      if (kindFilter === "attractions" && !isAttraction) return false;
       // Gluten-free is an additive attribute: when selected it's an AND constraint,
       // independent of the vegan/vegetarian value.
       if (dietaryFilter.includes(GLUTEN_FREE) && !p.gluten_free) return false;
@@ -116,7 +135,7 @@ export default function MapView({ places: initialPlaces }: MapViewProps) {
       }
       return true;
     });
-  }, [places, categoryFilter, dietaryFilter, cuisineFilter, neighborhoodFilter, searchQuery]);
+  }, [places, categoryFilter, kindFilter, dietaryFilter, cuisineFilter, neighborhoodFilter, searchQuery]);
 
   const handleSelectPlace = (id: string | null) => {
     setSelectedId(id);
@@ -130,6 +149,12 @@ export default function MapView({ places: initialPlaces }: MapViewProps) {
       {/* Filters — floating on mobile, below the control cluster so the wider
           Add button can't overlap them at 375px. */}
       <div className="absolute top-16 left-3 right-3 z-30 flex flex-col gap-1.5 md:hidden">
+        <FilterPills
+          options={KIND_OPTIONS}
+          selected={kindFilter}
+          onChange={setKindFilter}
+          scrollable
+        />
         <div className="flex gap-1.5">
           <div className="flex-1"><MultiSelectDropdown label="Show" options={CATEGORY_OPTIONS} selected={categoryFilter} onChange={setCategoryFilter} /></div>
           <div className="flex-1"><MultiSelectDropdown label="Diet" options={DIETARY_OPTIONS} selected={dietaryFilter} onChange={setDietaryFilter} /></div>
@@ -175,6 +200,11 @@ export default function MapView({ places: initialPlaces }: MapViewProps) {
             <h1 className="text-xl font-bold text-foreground">Vaidehi&apos;s SF Recs</h1>
           </div>
           <div className="flex flex-col gap-2">
+            <FilterPills
+              options={KIND_OPTIONS}
+              selected={kindFilter}
+              onChange={setKindFilter}
+            />
             <div className="flex gap-2">
               <div className="flex-1"><MultiSelectDropdown label="Show" options={CATEGORY_OPTIONS} selected={categoryFilter} onChange={setCategoryFilter} /></div>
               <div className="flex-1"><MultiSelectDropdown label="Diet" options={DIETARY_OPTIONS} selected={dietaryFilter} onChange={setDietaryFilter} /></div>
