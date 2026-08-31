@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin, getSupabase } from "@/lib/supabase";
 import { isAuthenticated } from "@/lib/auth";
+import { getPlaceDetails } from "@/lib/google-places";
 
 export async function GET() {
   const supabase = getSupabase();
@@ -60,5 +61,26 @@ export async function POST(req: NextRequest) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
+
+  // Cache Google metadata right away so the new place renders with hours, rating
+  // and photos immediately instead of waiting for the daily cron. Fetched here
+  // server-side — never trusted from the client. A Google failure is not fatal:
+  // the place is already inserted and the next refresh run will fill this in.
+  if (data?.google_place_id) {
+    try {
+      const details = await getPlaceDetails(data.google_place_id);
+      await supabase.from("cached_metadata").upsert({
+        google_place_id: data.google_place_id,
+        data: details,
+        fetched_at: new Date().toISOString(),
+      });
+    } catch (err) {
+      console.error(
+        `Failed to cache metadata for ${data.google_place_id}:`,
+        err instanceof Error ? err.message : err
+      );
+    }
+  }
+
   return NextResponse.json(data, { status: 201 });
 }

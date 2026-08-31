@@ -56,6 +56,15 @@ export interface GooglePlaceDetails {
   googleMapsUri?: string;
   websiteUri?: string;
   businessStatus?: string;
+  primaryType?: string;
+  primaryTypeDisplayName?: { text: string };
+  types?: string[];
+  shortFormattedAddress?: string;
+  addressComponents?: {
+    longText?: string;
+    shortText?: string;
+    types?: string[];
+  }[];
 }
 
 export interface PlaceWithMetadata extends Place {

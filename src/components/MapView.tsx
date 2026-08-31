@@ -2,13 +2,14 @@
 
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import type { Place, Category } from "@/lib/types";
 import MultiSelectDropdown from "./MultiSelectDropdown";
 import PlaceList from "./PlaceList";
 import BottomSheet from "./BottomSheet";
 import ThemeToggle from "./ThemeToggle";
 import LoginModal from "./LoginModal";
-import { Lock, LogOut } from "lucide-react";
+import { Lock, LogOut, Plus } from "lucide-react";
 
 const MapComponent = dynamic(() => import("./Map"), { ssr: false });
 
@@ -126,8 +127,9 @@ export default function MapView({ places: initialPlaces }: MapViewProps) {
 
   return (
     <div className="h-screen w-screen overflow-hidden relative">
-      {/* Filters — floating on mobile */}
-      <div className="absolute top-3 left-3 right-14 z-30 flex flex-col gap-1.5 md:hidden">
+      {/* Filters — floating on mobile, below the control cluster so the wider
+          Add button can't overlap them at 375px. */}
+      <div className="absolute top-16 left-3 right-3 z-30 flex flex-col gap-1.5 md:hidden">
         <div className="flex gap-1.5">
           <div className="flex-1"><MultiSelectDropdown label="Show" options={CATEGORY_OPTIONS} selected={categoryFilter} onChange={setCategoryFilter} /></div>
           <div className="flex-1"><MultiSelectDropdown label="Diet" options={DIETARY_OPTIONS} selected={dietaryFilter} onChange={setDietaryFilter} /></div>
@@ -138,6 +140,14 @@ export default function MapView({ places: initialPlaces }: MapViewProps) {
       </div>
 
       <div className="absolute top-3 right-3 z-30 flex items-center gap-2">
+        <Link
+          href="/add"
+          className="flex items-center gap-1.5 h-10 px-3.5 rounded-full bg-accent text-pill-active-text text-sm font-bold hover:bg-accent-hover transition-colors shadow-lg"
+          title="Add a place"
+        >
+          <Plus size={16} />
+          Add
+        </Link>
         {isAdmin ? (
           <button
             onClick={() => setIsAdmin(false)}

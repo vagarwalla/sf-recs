@@ -6,6 +6,23 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Categories: Added, Chan
 
 ---
 
+## [2026-08-31] - Quick-add page at `/add`
+
+### Added
+- **`/add`** — add a place from the site instead of hand-typing coordinates in `/admin`. Search Google Places, tap the result, and everything derivable is pre-filled; correct anything wrong and press Enter. Password comes first (reuses the existing 30-day `sf-recs-admin` cookie, so usually never asked). On success it confirms, resets and refocuses the search box for the next place. No moderation queue — the password is the only gate.
+- `GET /api/places/details?placeId=` — auth'd proxy for Google Place Details.
+- `src/lib/derive-place.ts` — Google `types` → `place_type` and `cuisine`, `priceLevel` → `$`…`$$$$`, plus haversine nearest-place neighborhood inference and frequency-sorted distinct values.
+- `src/components/StarInput.tsx` — the owner's 1-5 star input, extracted from `/admin` so both pages share it.
+- **Add** button in the map's floating control cluster, linking to `/add`.
+
+### Changed
+- `DETAIL_FIELDS` in `google-places.ts` now also requests `primaryType`, `primaryTypeDisplayName`, `types`, `shortFormattedAddress` and `addressComponents`; those fields were added to `GooglePlaceDetails`.
+- `POST /api/places` now fetches Google details server-side and upserts `cached_metadata` immediately after a successful insert, so a new place renders with hours/rating/photos without waiting for the daily cron. A Google failure is logged and does not fail the insert.
+- `/add` sets `google_place_id` on every place (the old `/admin` add form never did, so those places never got cached metadata) and defaults `category` to `rec` rather than `explore`.
+- Mobile filter row moved below the map's control cluster (`top-16`, full width) so the wider Add button can't overlap it at 375px — the filters also get more room than before.
+
+---
+
 ## [2026-06-14] - Bakery cuisine retag (completes Bakery icon work)
 
 ### Changed

@@ -4,30 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { Trash2, Save, LogIn, Plus, RefreshCw, Search, Star } from "lucide-react";
 import type { Place, Category, DietaryOption } from "@/lib/types";
 import ThemeToggle from "@/components/ThemeToggle";
-
-function StarInput({ value, onChange }: { value: number | null; onChange: (v: number | null) => void }) {
-  return (
-    <div className="flex items-center gap-0.5">
-      {[1, 2, 3, 4, 5].map((i) => (
-        <button
-          key={i}
-          type="button"
-          onClick={() => onChange(value === i ? null : i)}
-          className="p-0.5"
-        >
-          <Star
-            size={16}
-            className={`transition-colors ${
-              value && i <= value
-                ? "text-accent-orange fill-accent-orange"
-                : "text-muted/30 hover:text-accent-orange/50"
-            }`}
-          />
-        </button>
-      ))}
-    </div>
-  );
-}
+import StarInput from "@/components/StarInput";
 
 export default function AdminPage() {
   const [authenticated, setAuthenticated] = useState(false);

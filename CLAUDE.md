@@ -10,7 +10,42 @@ Personal recommendations map — restaurants, bars, coffee, activities, and more
 
 Two-view app: an interactive Mapbox map + a filterable list of places. Each place is either a **rec** (public recommendation) or **explore** (personal wishlist, not shown publicly by default). Metadata (hours, price, rating, address) is pulled from Google Places API and cached in Supabase — the public page never hits Google directly.
 
-Admin page at `/admin` for adding/removing places via Google Places search, editing notes, and managing categories.
+Quick-add page at `/add` (linked from the **Add** button on the map) is the way to add a place: search Google, tap the result, everything derivable is pre-filled, Enter saves. Admin page at `/admin` is for maintenance — the table, inline editing, delete, and manual metadata refresh.
+
+## Adding a place (`/add`)
+
+Designed for under 20 seconds, one-handed on a phone.
+
+1. **Password up front.** On mount the page does `GET /api/auth`. With the 30-day
+   `sf-recs-admin` cookie already set (the usual case) the form opens immediately;
+   otherwise a single password field gates it and `POST /api/auth` sets the cookie.
+2. **Search → tap → autofilled.** Debounced (300ms) `GET /api/places/search?q=` shows up
+   to 5 results. Tapping one calls `GET /api/places/details?placeId=` and pre-fills the form.
+3. **Correct and Enter.** Enter anywhere in the form submits to `POST /api/places`. On
+   success it confirms, resets, and refocuses the search box for the next place.
+
+What gets derived (all editable):
+
+| Field | Source |
+|---|---|
+| `name`, `latitude`/`longitude`, `website` | Google `displayName` / `location` / `websiteUri` |
+| `google_place_id` | Always set, so `cached_metadata` links up |
+| `price_level` | Google `priceLevel` enum → `$`…`$$$$` |
+| `category` | Defaults to **`rec`** (the common case from `/add`) |
+| `place_type` | Google `types` → bar / coffee / restaurant / activity |
+| `cuisine` | Google `types` → cuisine map, snapped to an existing DB spelling when it matches |
+| `neighborhood` | Google `neighborhood` address component if it matches a known one, else the neighborhood of the geographically nearest existing place (haversine) |
+| `dietary_options` | Defaults to `Both`; `gluten_free` false; `rating` and `notes` empty |
+
+Cuisine and neighborhood are comboboxes seeded with the distinct existing values (sorted
+by frequency) so filters stay clean. Latitude/longitude are never shown — if Google didn't
+return coordinates, submit is blocked with an inline error. Before inserting, the page
+checks the already-fetched place list for a matching `google_place_id` or case-insensitive
+name and requires a second tap to save a duplicate (`name` is UNIQUE in Postgres).
+
+`POST /api/places` fetches Google details itself and upserts `cached_metadata` right after
+the insert, so a new place shows hours/rating/photos immediately instead of waiting for the
+daily cron. Client-supplied metadata blobs are never trusted.
 
 ## Tech Stack
 
@@ -34,14 +69,17 @@ sf-recs/
       page.tsx                    # Public map + list view
       layout.tsx                  # Root layout, ThemeProvider, metadata
       globals.css                 # Tailwind + CSS custom properties
+      add/
+        page.tsx                  # Quick-add: search Google, autofill, one Enter to save
       admin/
-        page.tsx                  # Admin: search, add, edit notes, remove
+        page.tsx                  # Admin: table, inline edit, remove, refresh
       api/
         places/
           route.ts                # GET all places (public) | POST add (admin)
           [id]/route.ts           # PATCH update | DELETE remove (admin)
           refresh/route.ts        # POST: refresh Google metadata (Vercel Cron)
           search/route.ts         # GET: proxy Google Places Text Search (admin)
+          details/route.ts        # GET: proxy Google Place Details (admin)
     components/
       Map.tsx                     # Mapbox GL with markers, popups, clustering
       PlaceCard.tsx               # Detail card (name, hours, rating, notes, links)
@@ -52,10 +90,12 @@ sf-recs/
       ThemeToggle.tsx             # Light/dark mode toggle
       AdminSearch.tsx             # Google Places autocomplete + add button
       AdminPlaceRow.tsx           # Editable row in admin table
+      StarInput.tsx               # Owner's 1-5 star rating input (shared: /add + /admin)
       Providers.tsx               # ThemeProvider wrapper
     lib/
       supabase.ts                 # Supabase client singleton
       google-places.ts            # Google Places API wrapper (search, details, photo URL)
+      derive-place.ts             # Google types -> place_type / cuisine / neighborhood / price
       types.ts                    # TypeScript types
   scripts/
     import.ts                     # One-time Excel -> Supabase import

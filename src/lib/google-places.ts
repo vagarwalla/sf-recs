@@ -21,6 +21,12 @@ const DETAIL_FIELDS = [
   "googleMapsUri",
   "websiteUri",
   "businessStatus",
+  // Used by /add to pre-fill place_type, cuisine and neighborhood.
+  "primaryType",
+  "primaryTypeDisplayName",
+  "types",
+  "shortFormattedAddress",
+  "addressComponents",
 ].join(",");
 
 export async function searchPlaces(
