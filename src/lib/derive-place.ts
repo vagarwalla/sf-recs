@@ -112,6 +112,44 @@ const CUISINE_BY_TYPE: Record<string, string> = {
   wine_bar: "Wine Bar",
 };
 
+/**
+ * The `cuisine` column doubles as the free-text label for activities, where it
+ * holds the kind of attraction rather than a food. Kept separate from
+ * CUISINE_BY_TYPE and only consulted for activities, so a restaurant that
+ * Google also tags `tourist_attraction` still gets labelled by its food.
+ */
+const ATTRACTION_BY_TYPE: Record<string, string> = {
+  amusement_center: "Arcade",
+  amusement_park: "Amusement Park",
+  aquarium: "Aquarium",
+  art_gallery: "Art Gallery",
+  beach: "Beach",
+  book_store: "Bookstore",
+  botanical_garden: "Garden",
+  bowling_alley: "Bowling",
+  concert_hall: "Music Venue",
+  cultural_landmark: "Landmark",
+  garden: "Garden",
+  hiking_area: "Hiking",
+  historical_landmark: "Landmark",
+  historical_place: "Landmark",
+  library: "Library",
+  market: "Market",
+  movie_theater: "Cinema",
+  museum: "Museum",
+  national_park: "Park",
+  observation_deck: "Viewpoint",
+  park: "Park",
+  performing_arts_theater: "Theater",
+  planetarium: "Planetarium",
+  spa: "Spa",
+  state_park: "Park",
+  tourist_attraction: "Attraction",
+  video_arcade: "Arcade",
+  wildlife_park: "Zoo",
+  zoo: "Zoo",
+};
+
 /** "Italian Restaurant" -> "Italian", "Ice Cream Shop" -> "Ice Cream". */
 function fromDisplayName(displayName?: string): string {
   if (!displayName) return "";
@@ -121,8 +159,9 @@ function fromDisplayName(displayName?: string): string {
 }
 
 /**
- * Best-guess cuisine from Google's types, snapped to an existing database
- * spelling when one matches case-insensitively so the cuisine filter stays clean.
+ * Best-guess label from Google's types — a cuisine for places you eat at, the
+ * kind of attraction for activities — snapped to an existing database spelling
+ * when one matches case-insensitively so the cuisine filter stays clean.
  */
 export function deriveCuisine(
   details: GooglePlaceDetails,
@@ -132,10 +171,13 @@ export function deriveCuisine(
     (t): t is string => Boolean(t)
   );
 
+  const labels =
+    derivePlaceType(details) === "activity" ? ATTRACTION_BY_TYPE : CUISINE_BY_TYPE;
+
   let guess = "";
   for (const type of types) {
-    if (CUISINE_BY_TYPE[type]) {
-      guess = CUISINE_BY_TYPE[type];
+    if (labels[type]) {
+      guess = labels[type];
       break;
     }
   }

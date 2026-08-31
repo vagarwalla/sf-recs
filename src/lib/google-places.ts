@@ -29,12 +29,17 @@ const DETAIL_FIELDS = [
   "addressComponents",
 ].join(",");
 
+export interface PlaceSearchResult {
+  id: string;
+  displayName: { text: string };
+  formattedAddress: string;
+  location?: { latitude: number; longitude: number };
+}
+
 export async function searchPlaces(
   query: string,
   locationBias?: { lat: number; lng: number }
-): Promise<
-  { id: string; displayName: { text: string }; formattedAddress: string }[]
-> {
+): Promise<PlaceSearchResult[]> {
   const body: Record<string, unknown> = { textQuery: query, maxResultCount: 5 };
   if (locationBias) {
     body.locationBias = {
@@ -50,7 +55,10 @@ export async function searchPlaces(
     headers: {
       "Content-Type": "application/json",
       "X-Goog-Api-Key": getApiKey(),
-      "X-Goog-FieldMask": "places.id,places.displayName,places.formattedAddress",
+      // `location` lets callers verify a match against known coordinates
+      // without paying for a Details call per candidate. Same billing SKU.
+      "X-Goog-FieldMask":
+        "places.id,places.displayName,places.formattedAddress,places.location",
     },
     body: JSON.stringify(body),
   });

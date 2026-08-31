@@ -6,6 +6,58 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Categories: Added, Chan
 
 ---
 
+## [2026-08-31] - Attraction icons
+
+### Added
+- **Food / Attractions filter.** A three-way pill selector (All · Food ·
+  Attractions) in the filter menu, on both the desktop sidebar and the mobile
+  floating filters. Pills rather than a dropdown because it is the coarsest cut
+  of the map and worth a single tap. Reuses the existing `FilterPills`
+  component, which until now was unused. `activity` is the only non-food place
+  type, so the split is that one value against the other three.
+- **Attraction marker icons.** Activities now draw from their own icon table
+  (`ATTRACTION_ICONS` in `Map.tsx`) instead of the cuisine one — zoo 🦁, science
+  museum 🔬, arcade 🕹️, park 🌳, and so on, falling back to 🎟️ rather than a
+  dinner plate. The lookup reads the same free-text `cuisine` column, which for
+  an activity holds the kind of attraction.
+- `ATTRACTION_BY_TYPE` in `derive-place.ts` — Google `types` → attraction label
+  (museum, zoo, aquarium, arcade, park, landmark, …), consulted only when the
+  derived `place_type` is `activity`, so a restaurant Google also tags
+  `tourist_attraction` is still labelled by its food.
+- Seeded `scripts/add-places.ts` with the first three attractions: Exploratorium,
+  San Francisco Zoo & Gardens, Musée Mécanique. `dietary_options` and
+  `price_level` are now optional on `SeedPlace` — attractions have neither.
+- **`scripts/add-places.ts` now links to Google.** Each seeded place is matched
+  against Places Text Search and gets its `google_place_id` plus a
+  `cached_metadata` row, so it shows hours, rating and photos immediately and is
+  picked up by the daily refresh cron. Previously the script wrote rows with a
+  null `google_place_id`, which the cron skips forever.
+- **`--backfill`** repairs existing rows the same way: places with no
+  `google_place_id` are matched by name + coordinates, and places that are
+  linked but have no `cached_metadata` row get fetched. `--backfill-only` skips
+  the seed list; `--dry-run` resolves and reports without writing.
+- `searchPlaces()` now returns `location` (added to the Text Search field mask,
+  same billing tier), which is what lets the matcher verify a candidate without
+  a Details call each.
+
+### Changed
+- `getCuisineIcon(cuisine)` → `getPlaceIcon(place)`, which picks the icon table
+  from `place_type`.
+
+### Fixed
+- `npm run add-places` and `npm run retag` never loaded `.env` — `tsx` does not
+  read it on its own — so both always died on "Missing NEXT_PUBLIC_SUPABASE_URL".
+  Both now pass `--env-file-if-exists=.env`.
+
+### Matching
+- A Google result is accepted only when the name agrees (accent- and
+  punctuation-insensitive containment either way, so "San Francisco Zoo &
+  Gardens" matches "San Francisco Zoo") **and** it sits within 500m of the
+  coordinates already on file. Anything less certain is left unlinked and
+  reported — a wrong `google_place_id` is far worse than a missing one.
+
+---
+
 ## [2026-08-31] - Remove the `/admin` add form
 
 ### Removed

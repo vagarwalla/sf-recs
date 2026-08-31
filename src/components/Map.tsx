@@ -54,13 +54,59 @@ const CUISINE_ICONS: Record<string, string> = {
   steakhouse: "🥩",
 };
 
-function getCuisineIcon(cuisine: string | null): string {
-  if (!cuisine) return "🍽️";
-  const lower = cuisine.toLowerCase();
-  for (const [key, icon] of Object.entries(CUISINE_ICONS)) {
+/**
+ * Attractions, not food. Activities carry their kind ("Zoo", "Science Museum",
+ * "Arcade") in the same free-text `cuisine` label, so they get their own icon
+ * table instead of falling back to a dinner plate. Order matters — the lookup
+ * returns the first key contained in the label, so "science" must come before
+ * the generic "museum" for a science museum to read as one.
+ */
+const ATTRACTION_ICONS: Record<string, string> = {
+  science: "🔬",
+  planetarium: "🪐",
+  observator: "🔭",
+  aquarium: "🐠",
+  zoo: "🦁",
+  arcade: "🕹️",
+  amusement: "🎡",
+  bowling: "🎳",
+  art: "🖼️",
+  gallery: "🖼️",
+  museum: "🏛️",
+  landmark: "🗽",
+  garden: "🌷",
+  park: "🌳",
+  beach: "🏖️",
+  hiking: "🥾",
+  trail: "🥾",
+  viewpoint: "🌉",
+  cinema: "🎬",
+  movie: "🎬",
+  theater: "🎭",
+  theatre: "🎭",
+  music: "🎵",
+  bookstore: "📚",
+  library: "📚",
+  market: "🧺",
+  spa: "🧖",
+};
+
+/**
+ * Marker icon for a place: the cuisine table for anything you eat or drink at,
+ * the attraction table for activities. Both scan for the first key contained in
+ * the label and fall back to a type-appropriate default.
+ */
+function getPlaceIcon(place: Pick<Place, "place_type" | "cuisine">): string {
+  const isAttraction = place.place_type === "activity";
+  const icons = isAttraction ? ATTRACTION_ICONS : CUISINE_ICONS;
+  const fallback = isAttraction ? "🎟️" : "🍽️";
+
+  if (!place.cuisine) return fallback;
+  const lower = place.cuisine.toLowerCase();
+  for (const [key, icon] of Object.entries(icons)) {
     if (lower.includes(key)) return icon;
   }
-  return "🍽️";
+  return fallback;
 }
 
 function StarDots({ rating }: { rating: number }) {
@@ -174,7 +220,7 @@ export default function Map({ places, selectedId, onSelectPlace, hoveredId, isAd
         const isSelected = place.id === selectedId;
         const isHovered = place.id === activeHoverId;
         const isRec = place.category === "rec";
-        const icon = getCuisineIcon(place.cuisine);
+        const icon = getPlaceIcon(place);
 
         return (
           <Marker
@@ -249,7 +295,7 @@ export default function Map({ places, selectedId, onSelectPlace, hoveredId, isAd
             {(hoveredPlace.cuisine || hoveredPlace.rating) && (
               <div className="flex items-center gap-2 mt-1 text-xs text-muted">
                 {hoveredPlace.cuisine && (
-                  <span>{getCuisineIcon(hoveredPlace.cuisine)} {hoveredPlace.cuisine.split("/")[0].split("(")[0].trim()}</span>
+                  <span>{getPlaceIcon(hoveredPlace)} {hoveredPlace.cuisine.split("/")[0].split("(")[0].trim()}</span>
                 )}
                 {hoveredPlace.rating && <StarDots rating={hoveredPlace.rating} />}
               </div>
