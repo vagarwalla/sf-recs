@@ -196,3 +196,16 @@ RLS: public SELECT on both tables, service-role-only INSERT/UPDATE/DELETE.
 2. **Mapbox token** — need a Mapbox account and access token.
 3. **Excel import** — blocked on the user providing the restaurant spreadsheet.
 4. **Supabase service role key** — need to retrieve and store in Keychain.
+
+## Reporting back to V
+
+**V has ADHD. Summaries are short, bulleted and visual — a hard rule, not a style note.** A wall of prose does not get read, so a long summary is a failed handoff however good the work underneath it was.
+
+- **Bullets. Five or fewer. One line each.** No preamble, no restating the request.
+- **Lead with the picture.** Anything with a look — a page, a drawing, a chart, a layout — gets a rendered image (`SendUserFile`) or a live link *at the top*, before the words.
+- **Link, don't describe.** PR, branch, compare URL, deployed page.
+- **Any decision she has to make goes last, as one bullet.** If there is none, don't invent one.
+- **Bad news still gets a bullet** — broken, skipped or uncertain things stay in the list rather than being softened into prose.
+- Detail belongs in the commit message and the code comments, not in chat. She will ask if she wants more.
+
+Canonical copy: `identity-refresh/CLAUDE.md` § How to work with me.
