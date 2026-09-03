@@ -6,6 +6,34 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Categories: Added, Chan
 
 ---
 
+## [2026-09-03] - Attractions look different, not just iconographic
+
+### Changed
+- **Attraction markers are outlined squares, not filled circles.** Marker
+  styling now runs on two independent axes so either can be read without
+  decoding the other: **colour = category** (green rec, violet explore —
+  unchanged) and **fill = kind** (solid disc for food, square outlined marker on
+  the page ground for an attraction). Colour alone was carrying both jobs and
+  the emoji was the only thing separating a museum from a taqueria; shape
+  survives a small marker, a busy basemap, and a reader who has not learnt the
+  colour code.
+- **Category chips match.** The chip in the place card and the map hover popup
+  is solid for food and outlined for an attraction, and reads
+  "rec · attraction" so the kind is stated as well as drawn.
+
+### Added
+- `src/lib/place-visuals.ts` — `isAttraction()`, `markerClasses()`,
+  `chipClasses()`. One place decides how a place looks, shared by `Map.tsx` and
+  `PlaceCard.tsx`. Classes are spelled out rather than composed from a colour
+  variable because Tailwind scans source text.
+- **`PRIMER-INTEGRATION.md`** — the three ways sf-recs and the primer blog can
+  become one site (shared nav / one domain via Caddy / full migration), what
+  each costs, and why a shared nav is the recommended one.
+- **"part of primer ↗"** under the sidebar title — the reciprocal link for that
+  shared nav.
+
+---
+
 ## [2026-08-31] - Attraction icons
 
 ### Added

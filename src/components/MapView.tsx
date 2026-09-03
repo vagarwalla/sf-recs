@@ -198,6 +198,14 @@ export default function MapView({ places: initialPlaces }: MapViewProps) {
         <div className="w-[380px] shrink-0 h-full overflow-y-auto bg-background border-r border-card-border p-4 flex flex-col gap-3">
           <div>
             <h1 className="text-xl font-bold text-foreground">Vaidehi&apos;s SF Recs</h1>
+            {/* The way back to the rest of the site. One link, not a nav bar —
+                see PRIMER-INTEGRATION.md for how the two halves join up. */}
+            <a
+              href="https://primer.vaidehiagarwalla.com/"
+              className="text-xs text-muted hover:text-accent transition-colors"
+            >
+              part of primer ↗
+            </a>
           </div>
           <div className="flex flex-col gap-2">
             <FilterPills

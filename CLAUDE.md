@@ -96,6 +96,7 @@ sf-recs/
       supabase.ts                 # Supabase client singleton
       google-places.ts            # Google Places API wrapper (search, details, photo URL)
       derive-place.ts             # Google types -> place_type / cuisine / neighborhood / price
+      place-visuals.ts            # Marker/chip styling: colour = category, fill = food vs attraction
       types.ts                    # TypeScript types
   scripts/
     import.ts                     # One-time Excel -> Supabase import

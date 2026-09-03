@@ -4,6 +4,7 @@ import { useRef, useCallback, useEffect, useState } from "react";
 import MapGL, { Marker, Popup, NavigationControl, GeolocateControl } from "react-map-gl/mapbox";
 import { useTheme } from "next-themes";
 import type { Place } from "@/lib/types";
+import { isAttraction, markerClasses, chipClasses } from "@/lib/place-visuals";
 import PlaceCard from "./PlaceCard";
 import "mapbox-gl/dist/mapbox-gl.css";
 
@@ -97,9 +98,9 @@ const ATTRACTION_ICONS: Record<string, string> = {
  * the label and fall back to a type-appropriate default.
  */
 function getPlaceIcon(place: Pick<Place, "place_type" | "cuisine">): string {
-  const isAttraction = place.place_type === "activity";
-  const icons = isAttraction ? ATTRACTION_ICONS : CUISINE_ICONS;
-  const fallback = isAttraction ? "🎟️" : "🍽️";
+  const attraction = isAttraction(place);
+  const icons = attraction ? ATTRACTION_ICONS : CUISINE_ICONS;
+  const fallback = attraction ? "🎟️" : "🍽️";
 
   if (!place.cuisine) return fallback;
   const lower = place.cuisine.toLowerCase();
@@ -219,8 +220,10 @@ export default function Map({ places, selectedId, onSelectPlace, hoveredId, isAd
       {places.map((place) => {
         const isSelected = place.id === selectedId;
         const isHovered = place.id === activeHoverId;
-        const isRec = place.category === "rec";
         const icon = getPlaceIcon(place);
+        // Attractions sit on a squared, outlined marker rather than a solid
+        // disc, so they read as "not food" before the emoji is even legible.
+        const attraction = isAttraction(place);
 
         return (
           <Marker
@@ -239,12 +242,12 @@ export default function Map({ places, selectedId, onSelectPlace, hoveredId, isAd
               onMouseLeave={() => setHoveredMarkerId(null)}
             >
               <div
-                className={`flex items-center justify-center rounded-full w-8 h-8 transition-shadow ${
+                className={`flex items-center justify-center w-8 h-8 transition-shadow ${
                   isSelected || isHovered
                     ? "shadow-lg ring-2 ring-white/80"
                     : ""
-                } ${isRec ? "bg-badge-rec/90" : "bg-badge-explore/90"}`}
-                style={{ fontSize: "22px" }}
+                } ${markerClasses(place)}`}
+                style={{ fontSize: attraction ? "18px" : "22px" }}
               >
                 <span className="leading-none" role="img">{icon}</span>
               </div>
@@ -283,13 +286,10 @@ export default function Map({ places, selectedId, onSelectPlace, hoveredId, isAd
             <div className="flex items-center gap-1.5">
               <span className="font-bold text-sm text-foreground truncate">{hoveredPlace.name}</span>
               <span
-                className={`shrink-0 text-[9px] font-bold uppercase px-1 py-0.5 rounded ${
-                  hoveredPlace.category === "rec"
-                    ? "bg-badge-rec/20 text-badge-rec"
-                    : "bg-badge-explore/20 text-badge-explore"
-                }`}
+                className={`shrink-0 text-[9px] font-bold uppercase px-1 py-0.5 rounded ${chipClasses(hoveredPlace)}`}
               >
                 {hoveredPlace.category}
+                {isAttraction(hoveredPlace) ? " · attraction" : ""}
               </span>
             </div>
             {(hoveredPlace.cuisine || hoveredPlace.rating) && (

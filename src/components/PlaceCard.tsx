@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { MapPin, Globe, ExternalLink, Leaf, Star, Pencil, Check, X } from "lucide-react";
 import type { Place } from "@/lib/types";
+import { isAttraction, chipClasses } from "@/lib/place-visuals";
 
 interface PlaceCardProps {
   place: Place;
@@ -131,14 +132,13 @@ export default function PlaceCard({
           <div className="flex items-center gap-2">
             <h3 className="font-bold text-foreground truncate">{place.name}</h3>
             {!editing && place.rating && <StarRating rating={place.rating} />}
+            {/* Solid chip for food, outlined for an attraction — the same
+                two-axis language the map markers use. */}
             <span
-              className={`shrink-0 text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ${
-                place.category === "rec"
-                  ? "bg-badge-rec/20 text-badge-rec"
-                  : "bg-badge-explore/20 text-badge-explore"
-              }`}
+              className={`shrink-0 text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ${chipClasses(place)}`}
             >
               {place.category === "rec" ? "rec" : "explore"}
+              {isAttraction(place) ? " · attraction" : ""}
             </span>
           </div>
           <div className="flex items-center gap-2 mt-0.5 text-sm text-muted">
